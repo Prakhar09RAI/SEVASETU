@@ -95,6 +95,17 @@ The database consists of **38 relational models** managed deterministically via 
 - `Report`, `Block`, `VerificationRecord`, `Dispute`, `SupportTicket`, `TrustSafetyCase`, `AuditLog`, `PlatformSetting`
 - `AiInteraction`, `AiRequestInterpretation`, `AiReviewSummary`, `AiOperationalSignal`
 
+### Sequential Migration Order:
+All 8 production migrations are strictly linear, append-only, and idempotent:
+1. `20260927183340_init_auth_user` — Core User authentication, Address, and RBAC roles
+2. `20260927191225_init_phase2_profiles_and_services` — Provider profiles, service categories, catalog
+3. `20260928183721_init_phase3_availability` — Provider schedules, availability slots, and calendar overrides
+4. `20260929012249_init_phase4_booking` — Service requests, bookings, and 7-status lifecycle state machine
+5. `20261001164612_init_phase5_payments` — Payments, invoices, refunds, provider earnings, invoice sequences
+6. `20261001184041_init_phase6_reviews_chat_notifications` — Reviews, chat conversations, messages, notifications
+7. `20261002160306_init_phase7_trust_safety_operations` — Reports, disputes, support tickets, trust & safety cases, audit logs
+8. `20261002172154_init_phase8_ai_platform` — AI interactions, interpretations, review summaries, signals
+
 ### Production Migration Deployment:
 ```bash
 # In production, ALWAYS deploy migrations non-destructively:
@@ -108,7 +119,7 @@ npx prisma migrate status --schema=prisma/schema.prisma
 
 ---
 
-## 4. PostgreSQL Backup & Disaster Recovery (DR)
+## 4. PostgreSQL Backup, Disaster Recovery (DR) & Rollback
 
 ### Backup Procedure:
 ```bash
@@ -121,7 +132,7 @@ pg_dump -h <DB_HOST> -U <DB_USER> -d sevasetu -F c -b -v -f "/backups/sevasetu_$
 # - 1 copy off-site with encryption (AES-256)
 ```
 
-### Restore Procedure:
+### Recovery Sequence & Verification:
 ```bash
 # 1. Create fresh database instance or target staging:
 createdb -h <DB_HOST> -U <DB_USER> sevasetu_restored
@@ -132,9 +143,19 @@ pg_restore -h <DB_HOST> -U <DB_USER> -d sevasetu_restored -v "/backups/sevasetu_
 # 3. Apply any subsequent Prisma migrations:
 npx prisma migrate deploy --schema=prisma/schema.prisma
 
-# 4. Verify record counts & integrity check:
-# Pings users, bookings, payments, and invoice sequence integrity.
+# 4. Verify record counts & integrity check (PostgreSQL SQL):
+# Run in psql:
+# SELECT count(*) FROM "User";
+# SELECT count(*) FROM "Booking";
+# SELECT count(*) FROM "Payment";
+# SELECT count(*) FROM "Invoice";
+# SELECT last_value FROM "InvoiceSequence";
 ```
+
+### Rollback Considerations:
+- **Zero-Downtime Releases**: Code changes must maintain backwards compatibility with existing database columns.
+- **Additive Migrations Only**: Do not drop columns in the same release that stops writing to them (two-phase release strategy: deprecate first, drop in subsequent release).
+- **Application Rollback**: If a deployment fails health checks, roll back the Node.js application container/service to the prior image/commit. Database schema rollbacks should only be performed if the migration was strictly additive and did not delete or transform production user data.
 
 ---
 
@@ -222,6 +243,88 @@ npm run prisma:migrate:status --workspace=server
 
 # 6. Start production server:
 npm run start --workspace=server
+```
+
+### Production Nginx Reverse Proxy Configuration Template:
+```nginx
+# /etc/nginx/sites-available/sevasetu.conf
+server {
+    listen 80;
+    server_name sevasetu.com www.sevasetu.com api.sevasetu.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name sevasetu.com www.sevasetu.com;
+
+    ssl_certificate /etc/letsencrypt/live/sevasetu.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/sevasetu.com/privkey.pem;
+
+    # Static SPA Frontend Hosting
+    root /var/www/sevasetu/client/dist;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    server_name api.sevasetu.com;
+
+    ssl_certificate /etc/letsencrypt/live/sevasetu.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/sevasetu.com/privkey.pem;
+
+    # Backend API Reverse Proxy
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 60s;
+    }
+
+    # Socket.IO WebSocket Engine
+    location /socket.io/ {
+        proxy_pass http://127.0.0.1:5000/socket.io/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
+
+### Production Systemd Service Unit:
+```ini
+# /etc/systemd/system/sevasetu.service
+[Unit]
+Description=SevaSetu Backend Platform Service
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=sevasetu
+WorkingDirectory=/var/www/sevasetu/server
+EnvironmentFile=/var/www/sevasetu/server/.env
+ExecStart=/usr/bin/node dist/server.js
+Restart=always
+RestartSec=5
+KillSignal=SIGTERM
+TimeoutStopSec=15
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
 ```
 
 ---

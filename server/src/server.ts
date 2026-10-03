@@ -18,21 +18,29 @@ server.listen(config.port, () => {
 });
 
 async function handleShutdown(signal: string) {
-  console.log(`[SevaSetu Server] Received ${signal}. Closing HTTP server...`);
-  
-  // Close Prisma connection if active
-  const prisma = getPrismaClient();
-  if (prisma) {
-    try {
-      await prisma.$disconnect();
-      console.log('[SevaSetu Database] Prisma client disconnected.');
-    } catch {
-      // Ignore disconnect errors during process termination
-    }
-  }
+  console.log(`[SevaSetu Server] Received ${signal}. Initiating graceful shutdown...`);
 
-  server.close(() => {
+  // 10-second safety timeout to prevent hanging termination
+  const forceExitTimeout = setTimeout(() => {
+    console.error('[SevaSetu Server] Graceful shutdown timed out (10s limit). Forcing process exit.');
+    process.exit(1);
+  }, 10000);
+  forceExitTimeout.unref();
+
+  server.close(async () => {
     console.log('[SevaSetu Server] HTTP server closed gracefully.');
+    
+    // Close Prisma connection pool
+    const prisma = getPrismaClient();
+    if (prisma) {
+      try {
+        await prisma.$disconnect();
+        console.log('[SevaSetu Database] Prisma client disconnected.');
+      } catch {
+        // Ignore disconnect errors during process termination
+      }
+    }
+
     process.exit(0);
   });
 }
