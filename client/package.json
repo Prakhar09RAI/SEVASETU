@@ -7,6 +7,7 @@
     "dev": "vite",
     "prebuild": "npm run build --workspace=@sevasetu/shared",
     "build": "tsc -b && vite build",
+    "build:client": "npm run build",
     "pretypecheck": "npm run build --workspace=@sevasetu/shared",
     "typecheck": "tsc -b --noEmit",
     "test": "tsx src/__tests__/components.test.tsx",
