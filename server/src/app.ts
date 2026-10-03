@@ -23,12 +23,13 @@ export function createApp(): express.Application {
   app.use(cookieParser());
   app.use(
     express.json({
+      limit: '2mb',
       verify: (req, _res, buf) => {
         (req as unknown as { rawBody?: Buffer }).rawBody = buf;
       },
     })
   );
-  app.use(express.urlencoded({ extended: true }));
+  app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
   if (config.nodeEnv !== 'test') {
     app.use(morgan(config.nodeEnv === 'development' ? 'dev' : 'combined'));

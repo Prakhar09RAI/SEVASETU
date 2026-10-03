@@ -6,6 +6,44 @@ import { checkDatabaseConnection } from '../config/database.js';
 
 export const healthRouter = Router();
 
+/**
+ * Liveness Probe: Quick check that the process is running and responding.
+ */
+healthRouter.get('/health/live', (_req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    status: 'alive',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+/**
+ * Readiness Probe: Checks that critical dependencies (PostgreSQL) are operational.
+ * Returns HTTP 503 if database is disconnected to prevent routing traffic to degraded containers.
+ */
+healthRouter.get('/health/ready', async (_req: Request, res: Response) => {
+  const dbHealth = await checkDatabaseConnection();
+  if (!dbHealth.connected) {
+    res.status(503).json({
+      success: false,
+      status: 'not_ready',
+      message: 'PostgreSQL database is disconnected or unreachable.',
+      database: dbHealth,
+    });
+    return;
+  }
+
+  res.status(200).json({
+    success: true,
+    status: 'ready',
+    timestamp: new Date().toISOString(),
+    database: dbHealth,
+  });
+});
+
+/**
+ * Full Telemetry Endpoint: Returns comprehensive system, database, and process telemetry.
+ */
 healthRouter.get('/health', async (_req: Request, res: Response<ApiResponse<HealthStatus>>) => {
   const dbHealth = await checkDatabaseConnection();
   const isHealthy = dbHealth.connected;
@@ -20,11 +58,13 @@ healthRouter.get('/health', async (_req: Request, res: Response<ApiResponse<Heal
     database: dbHealth,
   };
 
-  res.status(200).json({
-    success: true,
+  const statusCode = isHealthy ? 200 : 503;
+  res.status(statusCode).json({
+    success: isHealthy,
     data: healthData,
     message: isHealthy
       ? 'All systems fully operational'
       : 'Service operational with degraded components: PostgreSQL is not connected',
   });
 });
+

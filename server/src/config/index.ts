@@ -117,6 +117,15 @@ export function validateConfig(): void {
     console.log(`  - Database (PostgreSQL): [CONFIGURED] Target: ${maskedUrl}`);
   }
 
+  // Validate Authentication Secret in Production
+  if (config.nodeEnv === 'production') {
+    if (!process.env.AUTH_SECRET || config.authSecret === 'sevasetu_jwt_dev_secret_key_2026_super_secure') {
+      console.error(
+        '  - Security Warning: [CRITICAL] AUTH_SECRET is using the fallback development key in production mode. Set a cryptographically secure random string in production environment.'
+      );
+    }
+  }
+
   // Validate Financial Policies (Reject unapproved implicit rules)
   if (config.financialPolicy.platformCommissionPercent !== undefined) {
     const comm = config.financialPolicy.platformCommissionPercent;
