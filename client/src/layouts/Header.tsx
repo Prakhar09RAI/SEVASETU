@@ -1,5 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, Sun, Moon, Search, LogOut, Shield, ChevronDown } from 'lucide-react';
+import {
+  Menu,
+  Sun,
+  Moon,
+  Search,
+  LogOut,
+  Shield,
+  ChevronDown,
+  Briefcase,
+  Activity,
+  Layers,
+  CalendarClock,
+  User,
+} from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/cn';
 import { DesktopNav } from '../components/navigation/DesktopNav';
@@ -74,52 +87,65 @@ export const Header: React.FC<HeaderProps> = ({
         )}
         {...props}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 sm:gap-4">
-          {/* Brand Logo & Wordmark */}
-          <Link
-            to="/"
-            className="flex items-center gap-3 shrink-0 focus-ring rounded-xl p-1 transition-transform hover:scale-[1.02]"
-            aria-label="SevaSetu Home"
-          >
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary-600 to-primary-800 text-white font-display font-extrabold text-lg shadow-md shadow-primary-950/20 select-none">
-              S
-            </div>
-            <div className="flex flex-col min-w-0 text-left">
-              <span className="font-display font-bold text-xl tracking-tight text-slate-900 dark:text-white leading-tight">
-                Seva<span className="text-primary-700 dark:text-primary-400">Setu</span>
-              </span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-wider uppercase truncate">
-                Bridge to Services
-              </span>
-            </div>
-          </Link>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
+          {/* ======================================================== */}
+          {/* ZONE 1 (LEFT): Brand Logo & Primary Desktop Navigation   */}
+          {/* ======================================================== */}
+          <div className="flex items-center gap-3 lg:gap-5 min-w-0 shrink">
+            {/* Brand Logo & Wordmark */}
+            <Link
+              to="/"
+              className="flex items-center gap-2.5 sm:gap-3 shrink-0 focus-ring rounded-xl p-1 transition-transform hover:scale-[1.02]"
+              aria-label="SevaSetu Home"
+            >
+              <div className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-primary-600 to-primary-800 text-white font-display font-extrabold text-base sm:text-lg shadow-md shadow-primary-950/20 select-none">
+                S
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white leading-tight">
+                  Seva<span className="text-primary-700 dark:text-primary-400">Setu</span>
+                </span>
+                <span className="hidden sm:inline-block text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-wider uppercase truncate">
+                  Bridge to Services
+                </span>
+              </div>
+            </Link>
 
-          {/* Primary Desktop Navigation Links */}
-          <div className="hidden md:flex items-center justify-center min-w-0">
-            <DesktopNav items={navItems} />
+            {/* Primary Desktop Navigation Links */}
+            <div className="hidden lg:flex items-center min-w-0 shrink">
+              <DesktopNav items={navItems} />
+            </div>
           </div>
 
-          {/* Right Action Tools: Search, Theme Toggle, Notifications, User Menu */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Global Search Pill (Cmd/Ctrl+K) */}
+          {/* ======================================================== */}
+          {/* ZONE 2 (CENTER): Flexible Search Pill (Cmd/Ctrl+K)       */}
+          {/* ======================================================== */}
+          <div className="hidden sm:flex flex-1 items-center justify-center min-w-0 px-2 lg:px-4 max-w-xs md:max-w-sm lg:max-w-md">
             <button
               type="button"
               onClick={() => navigate('/services')}
-              className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 text-xs text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 transition-colors focus-ring"
+              className="w-full max-w-[280px] lg:max-w-[320px] flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 text-xs text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-100/70 dark:hover:bg-slate-800/70 transition-all focus-ring truncate"
               aria-label="Search services (Cmd+K)"
             >
-              <Search size={14} className="text-slate-400" aria-hidden="true" />
-              <span>Search services...</span>
-              <kbd className="hidden md:inline-flex text-[10px] font-mono py-0.5 px-1.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 shadow-2xs">
+              <div className="flex items-center gap-2 min-w-0 truncate">
+                <Search size={14} className="text-slate-400 shrink-0" aria-hidden="true" />
+                <span className="truncate">Search services...</span>
+              </div>
+              <kbd className="hidden md:inline-flex text-[10px] font-mono py-0.5 px-1.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 shadow-2xs shrink-0">
                 ⌘K
               </kbd>
             </button>
+          </div>
 
+          {/* ======================================================== */}
+          {/* ZONE 3 (RIGHT): Action Tools & Controls                  */}
+          {/* ======================================================== */}
+          <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-2.5 shrink-0">
             {/* Dark / Light Mode Switcher */}
             <button
               type="button"
               onClick={toggleTheme}
-              className="w-10 h-10 inline-flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus-ring transition-colors cursor-pointer"
+              className="w-9 h-9 sm:w-10 sm:h-10 inline-flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus-ring transition-colors cursor-pointer"
               aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {isDark ? (
@@ -132,15 +158,15 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Notification Bell */}
             <Link
               to={user?.role === 'PROVIDER' ? '/provider/notifications' : '/notifications'}
-              className="w-10 h-10 inline-flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus-ring transition-colors cursor-pointer"
+              className="w-9 h-9 sm:w-10 sm:h-10 inline-flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus-ring transition-colors cursor-pointer"
               aria-label="Notifications"
             >
               <NotificationBadge size={19} />
             </Link>
 
-            {/* Custom injected action area (e.g. role switcher buttons) */}
+            {/* Custom Injected Action Area */}
             {actionArea && (
-              <div className="hidden sm:flex items-center gap-1.5 sm:gap-2">
+              <div className="hidden sm:flex items-center">
                 {actionArea}
               </div>
             )}
@@ -151,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsUserMenuOpen((prev) => !prev)}
-                  className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 focus-ring transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 sm:gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 focus-ring transition-colors cursor-pointer"
                   aria-expanded={isUserMenuOpen}
                   aria-haspopup="menu"
                   aria-label="User account menu"
@@ -161,10 +187,10 @@ export const Header: React.FC<HeaderProps> = ({
                     size="sm"
                     className="border border-slate-200 dark:border-slate-700"
                   />
-                  <span className="hidden md:inline text-xs font-semibold text-slate-800 dark:text-slate-200 max-w-[100px] truncate">
+                  <span className="hidden xl:inline text-xs font-semibold text-slate-800 dark:text-slate-200 max-w-[90px] truncate">
                     {user.fullName || user.email}
                   </span>
-                  <ChevronDown size={14} className="text-slate-400 dark:text-slate-500" aria-hidden="true" />
+                  <ChevronDown size={14} className="text-slate-400 dark:text-slate-500 hidden sm:inline" aria-hidden="true" />
                 </button>
 
                 {/* User Dropdown Panel */}
@@ -188,36 +214,66 @@ export const Header: React.FC<HeaderProps> = ({
                     </div>
 
                     <div className="py-1">
-                      {user.role === 'PROVIDER' ? (
-                        <Link
-                          to="/provider"
-                          onClick={() => setIsUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                          role="menuitem"
-                        >
-                          <Shield size={15} className="text-primary-600 dark:text-primary-400" />
-                          <span>Provider Console</span>
-                        </Link>
-                      ) : user.role === 'ADMIN' ? (
-                        <Link
-                          to="/admin"
-                          onClick={() => setIsUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                          role="menuitem"
-                        >
-                          <Shield size={15} className="text-amber-500" />
-                          <span>Admin Console</span>
-                        </Link>
-                      ) : (
-                        <Link
-                          to="/customer/bookings"
-                          onClick={() => setIsUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                          role="menuitem"
-                        >
-                          <span>My Bookings</span>
-                        </Link>
-                      )}
+                      <Link
+                        to="/activity"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        role="menuitem"
+                      >
+                        <CalendarClock size={15} className="text-primary-600 dark:text-primary-400" />
+                        <span>My Activity</span>
+                      </Link>
+                      <Link
+                        to="/profile"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        role="menuitem"
+                      >
+                        <User size={15} className="text-slate-500" />
+                        <span>Profile & Addresses</span>
+                      </Link>
+                    </div>
+
+                    <div className="py-1 border-t border-slate-100 dark:border-slate-800">
+                      <span className="block px-4 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                        Portals & Tools
+                      </span>
+                      <Link
+                        to="/provider"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        role="menuitem"
+                      >
+                        <Briefcase size={14} className="text-primary-600 dark:text-primary-400" />
+                        <span>Partner Portal</span>
+                      </Link>
+                      <Link
+                        to="/admin"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        role="menuitem"
+                      >
+                        <Shield size={14} className="text-amber-500" />
+                        <span>Operations Console</span>
+                      </Link>
+                      <Link
+                        to="/health"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        role="menuitem"
+                      >
+                        <Activity size={14} className="text-emerald-500" />
+                        <span>Health & DB Monitor</span>
+                      </Link>
+                      <Link
+                        to="/design-system"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        role="menuitem"
+                      >
+                        <Layers size={14} className="text-indigo-500" />
+                        <span>Design System</span>
+                      </Link>
                     </div>
 
                     <div className="pt-1 border-t border-slate-100 dark:border-slate-800">

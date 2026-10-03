@@ -50,7 +50,7 @@ export const ApplicationShell: React.FC<ApplicationShellProps> = ({
       <MobileNav
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
-        items={navItems}
+        items={sidebarItems && sidebarItems.length > 0 ? sidebarItems : navItems}
       />
 
       {/* Main Layout Area */}

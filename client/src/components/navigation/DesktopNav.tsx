@@ -12,7 +12,7 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({ items, className, ...pro
   return (
     <nav
       aria-label="Main Navigation"
-      className={cn('hidden md:flex items-center gap-1', className)}
+      className={cn('flex items-center gap-0.5 xl:gap-1.5 min-w-0', className)}
       {...props}
     >
       {items.map((item) => (
@@ -21,7 +21,7 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({ items, className, ...pro
           to={item.href}
           className={({ isActive }) =>
             cn(
-              'relative inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs lg:text-sm font-medium transition-all select-none whitespace-nowrap shrink-0',
+              'relative inline-flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-xl text-xs xl:text-sm font-medium transition-all select-none whitespace-nowrap shrink-0',
               'focus-ring',
               isActive
                 ? 'bg-primary-50 text-primary-800 font-semibold dark:bg-primary-950/70 dark:text-primary-300 shadow-xs'
