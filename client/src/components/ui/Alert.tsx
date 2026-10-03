@@ -38,7 +38,7 @@ const variantStyles: Record<
 export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
   ({ className, variant = 'info', title, children, onClose, icon = true, ...props }, ref) => {
     const config = variantStyles[variant];
-    const IconComponent = config.defaultIcon;
+    const IconComponent = config.defaultIcon as React.ComponentType<{ size?: number; className?: string; 'aria-hidden'?: boolean | 'true' | 'false' }>;
 
     return (
       <div

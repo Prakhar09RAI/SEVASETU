@@ -20,7 +20,9 @@ export interface ServiceCategoryCardProps {
   asLink?: boolean;
 }
 
-const iconMap: Record<string, React.ElementType> = {
+type CategoryIconComponent = React.ComponentType<{ size?: number; className?: string; 'aria-hidden'?: boolean | 'true' | 'false' }>;
+
+const iconMap: Record<string, CategoryIconComponent> = {
   Sparkles,
   Zap,
   Wrench,
@@ -36,7 +38,7 @@ export const ServiceCategoryCard: React.FC<ServiceCategoryCardProps> = ({
   className,
   asLink = true,
 }) => {
-  const IconComponent = (category.iconName && iconMap[category.iconName]) || Layers;
+  const IconComponent: CategoryIconComponent = (category.iconName && iconMap[category.iconName]) || Layers;
 
   const content = (
     <div

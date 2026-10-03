@@ -10,6 +10,10 @@ import { bookingService } from '../../services/booking.service';
 import type { BookingRecord } from '@sevasetu/shared';
 import type { CancellationReason } from '../../types';
 
+const BookingLifecycleScene = React.lazy(() =>
+  import('../../components/three').then((m) => ({ default: m.BookingLifecycleScene }))
+);
+
 export const CustomerBookingDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const bookingId = id || '';
@@ -173,6 +177,11 @@ export const CustomerBookingDetailPage: React.FC = () => {
           </div>
         </Alert>
       )}
+
+      {/* 3D Real-time Booking Lifecycle Stage Tracker */}
+      <React.Suspense fallback={<div className="h-56 w-full rounded-2xl bg-neutral-100/60 animate-pulse border border-neutral-200/60 flex items-center justify-center text-xs text-neutral-400">Loading Lifecycle Visualizer...</div>}>
+        <BookingLifecycleScene status={booking.status} referenceCode={booking.referenceCode} />
+      </React.Suspense>
 
       <BookingSummary
         booking={booking}

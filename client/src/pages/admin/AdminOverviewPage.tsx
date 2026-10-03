@@ -24,6 +24,10 @@ import { getBackendHealth } from '../../services/health.service';
 import { AdminService } from '../../services/admin.service';
 import type { HealthStatus, AdminDashboardMetrics } from '@sevasetu/shared';
 
+const AdminOperationsScene = React.lazy(() =>
+  import('../../components/three').then((m) => ({ default: m.AdminOperationsScene }))
+);
+
 export const AdminOverviewPage: React.FC = () => {
   const [health, setHealth] = useState<HealthStatus | null>(null);
   const [healthLoading, setHealthLoading] = useState<boolean>(true);
@@ -85,6 +89,14 @@ export const AdminOverviewPage: React.FC = () => {
           </div>
         }
       />
+
+      {/* 3D Platform Operations Hub */}
+      <React.Suspense fallback={<div className="h-72 w-full rounded-2xl bg-neutral-100/60 animate-pulse border border-neutral-200/60 flex items-center justify-center text-xs text-neutral-400">Initializing 3D Telemetry Hub...</div>}>
+        <AdminOperationsScene
+          metrics={metrics}
+          isHealthy={health?.status === 'healthy'}
+        />
+      </React.Suspense>
 
       {/* Platform Real-Time Health Card */}
       <Card variant="default" padding="md" className="bg-white border-neutral-200">

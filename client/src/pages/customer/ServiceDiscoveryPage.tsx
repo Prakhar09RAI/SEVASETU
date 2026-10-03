@@ -25,6 +25,10 @@ import type {
   AiMatchExplanation,
 } from '@sevasetu/shared';
 
+const DiscoveryFlowScene = React.lazy(() =>
+  import('../../components/three').then((m) => ({ default: m.DiscoveryFlowScene }))
+);
+
 export const ServiceDiscoveryPage: React.FC = () => {
   const { category: paramCategory } = useParams<{ category?: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -220,6 +224,11 @@ export const ServiceDiscoveryPage: React.FC = () => {
           </div>
         }
       />
+
+      {/* 3D Service Discovery & Matching Flow Pipeline */}
+      <React.Suspense fallback={<div className="h-60 w-full rounded-2xl bg-neutral-100/60 animate-pulse border border-neutral-200/60 flex items-center justify-center text-xs text-neutral-400">Loading Pipeline...</div>}>
+        <DiscoveryFlowScene />
+      </React.Suspense>
 
       {/* Filter Bar Component */}
       <ServiceSearchFilters

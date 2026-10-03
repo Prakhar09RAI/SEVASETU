@@ -24,10 +24,16 @@ import { providerService } from '../../services/provider.service';
 import type { ProviderProfileData as UIProviderProfileData } from '../../types';
 import type { ProviderOnboardingState } from '@sevasetu/shared';
 
+const ProviderActivityScene = React.lazy(() =>
+  import('../../components/three').then((m) => ({ default: m.ProviderActivityScene }))
+);
+
 export const ProviderOverviewPage: React.FC = () => {
   const [profile, setProfile] = useState<UIProviderProfileData | null>(null);
   const [hasSkills, setHasSkills] = useState(false);
   const [hasServices, setHasServices] = useState(false);
+  const [skillsCount, setSkillsCount] = useState(0);
+  const [servicesCount, setServicesCount] = useState(0);
   const [onboarding, setOnboarding] = useState<ProviderOnboardingState | null>(null);
 
   useEffect(() => {
@@ -54,6 +60,8 @@ export const ProviderOverviewPage: React.FC = () => {
           });
           setHasSkills(skillsData.length > 0);
           setHasServices(servicesData.length > 0);
+          setSkillsCount(skillsData.length);
+          setServicesCount(servicesData.length);
           setOnboarding(onboardingData);
         }
       } catch (_err) {
@@ -97,6 +105,17 @@ export const ProviderOverviewPage: React.FC = () => {
           </div>
         }
       />
+
+      {/* 3D Partner Operational Readiness Hub */}
+      <React.Suspense fallback={<div className="h-64 w-full rounded-2xl bg-neutral-100/60 animate-pulse border border-neutral-200/60 flex items-center justify-center text-xs text-neutral-400">Loading Partner Hub...</div>}>
+        <ProviderActivityScene
+          isVerified={profile?.verificationStatus === 'verified'}
+          onboardingStatus={currentStatus}
+          skillsCount={skillsCount}
+          servicesCount={servicesCount}
+          hasAvailability={hasSkills && hasServices}
+        />
+      </React.Suspense>
 
       {/* Top Status & Profile Completion Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

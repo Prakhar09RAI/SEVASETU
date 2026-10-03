@@ -22,6 +22,10 @@ import { CORE_SERVICE_CATEGORIES } from '../../constants/categories';
 import { AiClientService } from '../../services/ai.service';
 import type { AiRepeatServiceRecommendation, AiPredictiveReminder } from '@sevasetu/shared';
 
+const HeroServiceEcosystemScene = React.lazy(() =>
+  import('../../components/three').then((m) => ({ default: m.HeroServiceEcosystemScene }))
+);
+
 export const CustomerHomePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [repeatRecommendations, setRepeatRecommendations] = useState<AiRepeatServiceRecommendation[]>([]);
@@ -104,6 +108,13 @@ export const CustomerHomePage: React.FC = () => {
                 <span>Natural Language Search</span>
               </Link>
             </div>
+          </div>
+
+          {/* Interactive 3D Service Ecosystem Visualizer */}
+          <div className="max-w-4xl mx-auto pt-2">
+            <React.Suspense fallback={<div className="h-80 w-full rounded-2xl bg-neutral-100/60 animate-pulse border border-neutral-200/60 flex items-center justify-center text-xs text-neutral-400">Loading 3D Ecosystem...</div>}>
+              <HeroServiceEcosystemScene />
+            </React.Suspense>
           </div>
         </PageContainer>
       </section>
