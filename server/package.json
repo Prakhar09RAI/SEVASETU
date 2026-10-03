@@ -6,8 +6,10 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "prebuild": "prisma generate --schema=prisma/schema.prisma",
     "build": "tsc",
     "start": "node dist/server.js",
+    "pretypecheck": "prisma generate --schema=prisma/schema.prisma",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate --schema=prisma/schema.prisma",
     "prisma:validate": "prisma validate --schema=prisma/schema.prisma",
