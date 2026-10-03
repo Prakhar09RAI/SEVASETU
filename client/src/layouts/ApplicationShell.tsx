@@ -29,11 +29,11 @@ export const ApplicationShell: React.FC<ApplicationShellProps> = ({
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900 font-sans flex flex-col antialiased selection:bg-primary-100 selection:text-primary-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans flex flex-col antialiased selection:bg-primary-200 selection:text-primary-900">
       {/* Skip to Main Content Link for Keyboard Accessibility */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary-600 focus:text-white focus:rounded-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary-700 focus:text-white focus:rounded-xl focus:shadow-xl focus-ring font-medium"
       >
         Skip to main content
       </a>
@@ -82,3 +82,5 @@ export const ApplicationShell: React.FC<ApplicationShellProps> = ({
     </div>
   );
 };
+
+export default ApplicationShell;

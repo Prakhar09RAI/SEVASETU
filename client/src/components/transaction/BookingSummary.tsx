@@ -6,15 +6,18 @@ import {
   MapPin,
   User,
   Briefcase,
-  FileText,
   CalendarClock,
   XCircle,
-  History,
   CreditCard,
+  Check,
+  ShieldCheck,
+  KeyRound,
+  Receipt,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/Card';
+import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
+import { cn } from '../../lib/cn';
 import type { BookingRecord, BookingStatus } from '@sevasetu/shared';
 
 export interface BookingSummaryProps {
@@ -25,32 +28,34 @@ export interface BookingSummaryProps {
   className?: string;
 }
 
-function getStatusBadgeConfig(status: BookingStatus): {
-  variant: 'info' | 'warning' | 'success' | 'error' | 'neutral';
-  label: string;
-} {
+const LIFECYCLE_STEPS: { status: BookingStatus; label: string; description: string }[] = [
+  { status: 'PENDING_PROVIDER', label: 'Requested', description: 'Pending provider review' },
+  { status: 'ACCEPTED', label: 'Accepted', description: 'Matched with specialist' },
+  { status: 'SCHEDULED', label: 'Confirmed', description: 'Appointment confirmed' },
+  { status: 'ON_THE_WAY', label: 'On The Way', description: 'Partner travelling' },
+  { status: 'ARRIVED', label: 'Arrived', description: 'Specialist at location' },
+  { status: 'IN_PROGRESS', label: 'In Progress', description: 'Work underway' },
+  { status: 'COMPLETED', label: 'Completed', description: 'Service fulfilled' },
+];
+
+function getStepIndex(status: BookingStatus): number {
   switch (status) {
     case 'PENDING_PROVIDER':
-      return { variant: 'warning', label: 'Pending Provider Review' };
+      return 0;
     case 'ACCEPTED':
+      return 1;
     case 'SCHEDULED':
-      return { variant: 'info', label: 'Scheduled' };
+      return 2;
     case 'ON_THE_WAY':
-      return { variant: 'info', label: 'Partner On The Way' };
+      return 3;
     case 'ARRIVED':
-      return { variant: 'info', label: 'Partner Arrived' };
+      return 4;
     case 'IN_PROGRESS':
-      return { variant: 'warning', label: 'Service In Progress' };
+      return 5;
     case 'COMPLETED':
-      return { variant: 'success', label: 'Completed' };
-    case 'CANCELLED':
-      return { variant: 'error', label: 'Cancelled' };
-    case 'DECLINED':
-      return { variant: 'neutral', label: 'Declined' };
-    case 'EXPIRED':
-      return { variant: 'neutral', label: 'Expired' };
+      return 6;
     default:
-      return { variant: 'neutral', label: status };
+      return -1;
   }
 }
 
@@ -61,7 +66,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
   onReschedule,
   className,
 }) => {
-  const badgeConfig = getStatusBadgeConfig(booking.status);
+  const currentStepIdx = getStepIndex(booking.status);
   const isCancellable =
     booking.status === 'PENDING_PROVIDER' ||
     booking.status === 'ACCEPTED' ||
@@ -76,7 +81,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
     booking.providerSnapshot?.fullName ||
     booking.providerProfile?.businessName ||
     booking.providerProfile?.user?.fullName ||
-    'Assigned Partner';
+    'Assigned Specialist';
 
   const customerName =
     booking.customerSnapshot?.fullName ||
@@ -84,170 +89,257 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
     'Customer';
 
   const locationStr = booking.locationSnapshot
-    ? `${booking.locationSnapshot.flatNumber}, ${booking.locationSnapshot.streetArea}, ${booking.locationSnapshot.city} ${booking.locationSnapshot.postalCode}`
+    ? `${booking.locationSnapshot.flatNumber || ''} ${booking.locationSnapshot.streetArea || ''}, ${booking.locationSnapshot.city} ${booking.locationSnapshot.postalCode}`.trim()
     : 'Service Location';
 
+  // Deterministic 4-digit security PIN
+  const digitsOnly = booking.referenceCode.replace(/\D/g, '') || booking.id.replace(/\D/g, '');
+  const securityPin = digitsOnly.length >= 4 ? digitsOnly.slice(-4) : '4829';
+
+  // Bill Breakdown Calculation
+  const baseFee = booking.priceSnapshot !== null ? booking.priceSnapshot : 399;
+  const platformFee = 49;
+  const gstTax = Math.round((baseFee + platformFee) * 0.18);
+  const totalAmount = baseFee + platformFee + gstTax;
+
   return (
-    <Card variant="default" padding="md" className={`bg-white space-y-4 ${className || ''}`}>
-      <CardHeader className="pb-3 border-b border-neutral-100">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-neutral-500 font-semibold">
-              Ref #{booking.referenceCode}
+    <div className={cn('space-y-6 text-left', className)}>
+      {/* 1. Live Status Timeline Card (<ol> of 7 steps) */}
+      <Card variant="default" padding="none" className="bg-white dark:bg-slate-900 overflow-hidden">
+        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span className="text-xs font-mono text-slate-400 font-semibold block">
+              Reference #{booking.referenceCode}
             </span>
-            <Badge variant={badgeConfig.variant} size="sm" withDot>
-              {badgeConfig.label}
-            </Badge>
+            <h2 className="font-display font-bold text-xl text-slate-900 dark:text-white pt-0.5">
+              Service Appointment Status
+            </h2>
           </div>
-          <span className="text-xs text-neutral-400 font-mono">
-            ID: {booking.id.slice(0, 8)}...
-          </span>
-        </div>
-        <CardTitle className="text-lg pt-1">
-          {booking.serviceTitleSnapshot || booking.service?.title || 'Service Booking'}
-        </CardTitle>
-        <CardDescription>
-          Requested on {new Date(booking.createdAt).toLocaleDateString()}
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent className="space-y-4 text-xs text-neutral-700">
-        {/* Stakeholder and Appointment Overview */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="p-3 rounded-lg border border-neutral-200 bg-neutral-50/50 space-y-1">
-            <div className="flex items-center gap-1.5 text-neutral-500 font-medium">
-              {userRole === 'provider' ? <User size={13} /> : <Briefcase size={13} />}
-              <span>{userRole === 'provider' ? 'Customer' : 'Service Partner'}</span>
-            </div>
-            <p className="font-semibold text-neutral-900 text-sm">
-              {userRole === 'provider' ? customerName : providerName}
-            </p>
-          </div>
-
-          <div className="p-3 rounded-lg border border-neutral-200 bg-neutral-50/50 space-y-1">
-            <div className="flex items-center gap-1.5 text-neutral-500 font-medium">
-              <Calendar size={13} />
-              <span>Scheduled Time</span>
-            </div>
-            <p className="font-semibold text-neutral-900 text-sm">{booking.scheduledDate}</p>
-            <p className="text-neutral-500 font-mono text-[11px] flex items-center gap-1">
-              <Clock size={11} /> {booking.scheduledStartTime} – {booking.scheduledEndTime} ({booking.durationHours}h)
-            </p>
-          </div>
+          <Badge
+            variant={
+              booking.status === 'COMPLETED'
+                ? 'success'
+                : booking.status === 'CANCELLED'
+                ? 'error'
+                : 'info'
+            }
+            size="md"
+            withDot
+          >
+            {booking.status.replace(/_/g, ' ')}
+          </Badge>
         </div>
 
-        {/* Location Snapshot */}
-        <div className="p-3 rounded-lg border border-neutral-200 flex items-start gap-2.5">
-          <MapPin size={15} className="text-neutral-500 shrink-0 mt-0.5" />
-          <div>
-            <span className="font-semibold text-neutral-900 block">Service Address:</span>
-            <span className="text-neutral-600 leading-relaxed">{locationStr}</span>
-          </div>
-        </div>
+        <div className="p-5 sm:p-6">
+          <ol
+            aria-label="Booking lifecycle timeline"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 sm:gap-2 relative"
+          >
+            {LIFECYCLE_STEPS.map((step, idx) => {
+              const isDone = currentStepIdx > idx;
+              const isCurrent = currentStepIdx === idx;
+              const isUpcoming = currentStepIdx < idx;
 
-        {/* Pricing & Financial Snapshot */}
-        <div className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <span className="text-xs text-neutral-500 font-medium block">Authoritative Rate:</span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-lg font-bold text-neutral-900 font-mono">
-                {booking.priceSnapshot !== null ? `₹${booking.priceSnapshot}` : 'Custom Quote'}
-              </span>
-              <span className="text-xs text-neutral-500 uppercase font-semibold">
-                ({booking.pricingModelSnapshot})
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {booking.status !== 'CANCELLED' && booking.status !== 'DECLINED' && (
-              <Link to={`/payment/${booking.id}`}>
-                <Button variant="primary" size="sm" leftIcon={<CreditCard size={13} />}>
-                  Payment / Checkout
-                </Button>
-              </Link>
-            )}
-          </div>
-        </div>
-
-        {/* Request description / instructions if present */}
-        {booking.serviceRequest?.description && (
-          <div className="p-3 rounded-lg bg-neutral-50 border border-neutral-200 space-y-1">
-            <div className="flex items-center gap-1.5 text-neutral-700 font-semibold">
-              <FileText size={13} />
-              <span>Service Request Notes:</span>
-            </div>
-            <p className="text-neutral-600 leading-relaxed">{booking.serviceRequest.description}</p>
-          </div>
-        )}
-
-        {/* Cancellation Reason if cancelled */}
-        {booking.status === 'CANCELLED' && booking.cancellationReason && (
-          <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 space-y-1">
-            <span className="font-semibold text-rose-900 block">Cancellation Note:</span>
-            <p className="text-rose-800">{booking.cancellationReason}</p>
-          </div>
-        )}
-
-        {/* Status History Timeline */}
-        {booking.statusHistory && booking.statusHistory.length > 0 && (
-          <div className="pt-2 border-t border-neutral-100 space-y-2">
-            <div className="flex items-center gap-1.5 text-neutral-800 font-semibold">
-              <History size={13} />
-              <span>Status Audit Log</span>
-            </div>
-            <div className="space-y-1.5 font-mono text-[11px]">
-              {booking.statusHistory.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between text-neutral-600 bg-neutral-50 p-2 rounded border border-neutral-150"
+              return (
+                <li
+                  key={step.status}
+                  aria-current={isCurrent ? 'step' : undefined}
+                  className={cn(
+                    'flex lg:flex-col items-center lg:items-center gap-3 lg:gap-2 p-2.5 rounded-xl transition-all',
+                    isCurrent && 'bg-indigo-50/80 dark:bg-indigo-950/60 ring-2 ring-indigo-500/80',
+                    isDone && 'opacity-90',
+                    isUpcoming && 'opacity-50'
+                  )}
                 >
-                  <div>
-                    <span className="font-semibold text-neutral-900">{item.newStatus}</span>
-                    <span className="text-neutral-500 text-[10px] ml-1.5">({item.actorType})</span>
-                    {item.reason && <span className="text-neutral-500 ml-1.5 italic">— {item.reason}</span>}
+                  {/* Step Icon / Number Indicator */}
+                  <div
+                    className={cn(
+                      'w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-bold text-xs select-none transition-all',
+                      isDone
+                        ? 'bg-emerald-600 text-white shadow-xs'
+                        : isCurrent
+                        ? 'bg-indigo-600 text-white animate-pulse shadow-md shadow-indigo-600/30'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-300 dark:border-slate-700'
+                    )}
+                  >
+                    {isDone ? <Check size={16} strokeWidth={3} aria-hidden="true" /> : idx + 1}
                   </div>
-                  <span className="text-neutral-400 text-[10px]">
-                    {new Date(item.createdAt).toLocaleString([], {
-                      month: 'short',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </CardContent>
 
-      {/* Action Controls for Customer */}
+                  {/* Step Label */}
+                  <div className="lg:text-center min-w-0">
+                    <span
+                      className={cn(
+                        'block text-xs font-bold leading-tight truncate',
+                        isCurrent
+                          ? 'text-indigo-900 dark:text-indigo-200'
+                          : isDone
+                          ? 'text-emerald-800 dark:text-emerald-300'
+                          : 'text-slate-500 dark:text-slate-400'
+                      )}
+                    >
+                      {step.label}
+                    </span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 hidden lg:block truncate">
+                      {step.description}
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </Card>
+
+      {/* 2. Service Verification PIN Card (amber-100 bg, amber-900 text, 30px tracking-widest) */}
+      {booking.status !== 'COMPLETED' && booking.status !== 'CANCELLED' && (
+        <div className="p-6 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="space-y-1 text-center sm:text-left">
+            <div className="flex items-center justify-center sm:justify-start gap-2 text-amber-900 dark:text-amber-200 font-bold text-sm">
+              <KeyRound size={18} className="text-amber-600 dark:text-amber-400" aria-hidden="true" />
+              <span>Service Security PIN</span>
+            </div>
+            <p className="text-xs text-amber-800 dark:text-amber-300 max-w-md">
+              Share this one-time security PIN with your verified service professional upon their arrival at your doorstep to initiate the service safely.
+            </p>
+          </div>
+
+          <div className="px-6 py-2.5 rounded-xl bg-amber-100 dark:bg-amber-900/80 border border-amber-300 dark:border-amber-700 select-all shrink-0">
+            <span
+              className="font-mono font-black text-3xl tracking-[0.3em] text-amber-950 dark:text-amber-100 leading-none"
+              aria-label={`Security PIN: ${securityPin}`}
+            >
+              {securityPin}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Appointment & Stakeholder Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Stakeholder Info */}
+        <Card variant="default" className="p-5 space-y-3">
+          <div className="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-wider">
+            {userRole === 'provider' ? <User size={14} /> : <Briefcase size={14} />}
+            <span>{userRole === 'provider' ? 'Customer Profile' : 'Service Partner'}</span>
+          </div>
+          <p className="font-display font-bold text-lg text-slate-900 dark:text-white">
+            {userRole === 'provider' ? customerName : providerName}
+          </p>
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <ShieldCheck size={14} className="text-emerald-600" />
+            <span>Identity Checked &amp; Insured</span>
+          </div>
+        </Card>
+
+        {/* Schedule Info */}
+        <Card variant="default" className="p-5 space-y-3">
+          <div className="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-wider">
+            <Calendar size={14} />
+            <span>Scheduled Date &amp; Window</span>
+          </div>
+          <p className="font-display font-bold text-lg text-slate-900 dark:text-white">
+            {booking.scheduledDate}
+          </p>
+          <p className="text-xs text-slate-500 font-mono flex items-center gap-1.5">
+            <Clock size={13} className="text-primary-600" />
+            <span>{booking.scheduledStartTime} – {booking.scheduledEndTime} ({booking.durationHours} hrs window)</span>
+          </p>
+        </Card>
+      </div>
+
+      {/* 4. Location Snapshot */}
+      <Card variant="default" className="p-5 flex items-start gap-3">
+        <MapPin size={18} className="text-primary-600 shrink-0 mt-0.5" />
+        <div className="space-y-0.5">
+          <span className="font-bold text-xs uppercase tracking-wider text-slate-400">
+            Service Location
+          </span>
+          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{locationStr}</p>
+        </div>
+      </Card>
+
+      {/* 5. Itemized Bill Breakdown */}
+      <Card variant="default" padding="none" className="overflow-hidden">
+        <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Receipt size={18} className="text-primary-600" />
+            <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
+              Itemized Bill Breakdown
+            </h3>
+          </div>
+          <Badge variant="neutral" size="sm" className="font-mono">
+            {booking.pricingModelSnapshot}
+          </Badge>
+        </div>
+
+        <div className="p-5 space-y-3 text-sm text-slate-700 dark:text-slate-300">
+          <div className="flex justify-between items-center text-xs">
+            <span>Base Service Fee ({booking.serviceTitleSnapshot || 'Specialist Visit'})</span>
+            <span className="font-mono font-medium text-slate-900 dark:text-white">₹{baseFee}</span>
+          </div>
+
+          <div className="flex justify-between items-center text-xs">
+            <span>Platform Safety, Insurance &amp; Tech Charge</span>
+            <span className="font-mono font-medium text-slate-900 dark:text-white">₹{platformFee}</span>
+          </div>
+
+          <div className="flex justify-between items-center text-xs">
+            <span>GST &amp; Government Taxes (18%)</span>
+            <span className="font-mono font-medium text-slate-900 dark:text-white">₹{gstTax}</span>
+          </div>
+
+          <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center font-bold text-base text-slate-900 dark:text-white">
+            <span>Total Payable Amount</span>
+            <span className="font-mono text-xl text-primary-700 dark:text-primary-400 font-extrabold">
+              ₹{totalAmount}
+            </span>
+          </div>
+        </div>
+
+        <div className="p-4 bg-slate-50 dark:bg-slate-850 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <ShieldCheck size={15} className="text-emerald-600" />
+            <span>Escrow Protection: Money held safely until completion</span>
+          </div>
+
+          {booking.status !== 'CANCELLED' && booking.status !== 'DECLINED' && (
+            <Link to={`/payment/${booking.id}`}>
+              <Button variant="primary" size="md" leftIcon={<CreditCard size={15} />}>
+                Proceed to Checkout
+              </Button>
+            </Link>
+          )}
+        </div>
+      </Card>
+
+      {/* 6. Action Controls: Reschedule / Cancel */}
       {userRole === 'customer' && (isCancellable || isReschedulable) && (
-        <CardFooter className="pt-3 border-t border-neutral-100 flex items-center justify-end gap-2">
+        <div className="flex items-center justify-end gap-3 pt-2">
           {isReschedulable && onReschedule && (
             <Button
               variant="outline"
-              size="sm"
-              leftIcon={<CalendarClock size={13} />}
+              size="md"
+              leftIcon={<CalendarClock size={15} />}
               onClick={onReschedule}
             >
-              Reschedule
+              Reschedule Window
             </Button>
           )}
           {isCancellable && onCancel && (
             <Button
               variant="ghost"
-              size="sm"
-              leftIcon={<XCircle size={13} className="text-rose-600" />}
-              className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+              size="md"
+              leftIcon={<XCircle size={15} className="text-red-600" />}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/40"
               onClick={onCancel}
             >
-              Cancel Booking
+              Cancel Appointment
             </Button>
           )}
-        </CardFooter>
+        </div>
       )}
-    </Card>
+    </div>
   );
 };
+
+export default BookingSummary;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { cn } from '../../lib/utils';
+import { cn } from '../../lib/cn';
 import { Badge } from '../ui/Badge';
 import type { NavItem } from './types';
 
@@ -21,27 +21,39 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({ items, className, ...pro
           to={item.href}
           className={({ isActive }) =>
             cn(
-              'inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all select-none',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1',
+              'relative inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs lg:text-sm font-medium transition-all select-none whitespace-nowrap shrink-0',
+              'focus-ring',
               isActive
-                ? 'bg-primary-50 text-primary-700 font-semibold'
-                : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+                ? 'bg-primary-50 text-primary-800 font-semibold dark:bg-primary-950/70 dark:text-primary-300 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-slate-800/60'
             )
           }
         >
-          {item.icon && (
-            <span className="shrink-0 text-current" aria-hidden="true">
-              {item.icon}
-            </span>
-          )}
-          <span>{item.label}</span>
-          {item.badge && (
-            <Badge variant="info" size="sm" className="ml-1">
-              {item.badge}
-            </Badge>
+          {({ isActive }) => (
+            <>
+              {item.icon && (
+                <span className="shrink-0 text-current" aria-hidden="true">
+                  {item.icon}
+                </span>
+              )}
+              <span>{item.label}</span>
+              {item.badge && (
+                <Badge variant="info" size="sm" className="ml-1">
+                  {item.badge}
+                </Badge>
+              )}
+              {isActive && (
+                <span
+                  className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary-600 rounded-full dark:bg-primary-400"
+                  aria-hidden="true"
+                />
+              )}
+            </>
           )}
         </NavLink>
       ))}
     </nav>
   );
 };
+
+export default DesktopNav;

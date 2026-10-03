@@ -14,35 +14,42 @@ export const MessageStatusIndicator: React.FC<MessageStatusIndicatorProps> = ({
   switch (status) {
     case 'sending':
       return (
-        <span title="Sending message..." className={className} aria-label="Sending message">
-          <Clock size={12} className="text-neutral-400 animate-pulse" />
+        <span title="Sending message..." className={className}>
+          <Clock size={12} className="text-slate-400 dark:text-slate-500 animate-pulse" aria-hidden="true" />
+          <span className="sr-only">Sending message</span>
         </span>
       );
     case 'sent':
       return (
-        <span title="Sent to server" className={className} aria-label="Message sent">
-          <Check size={12} className="text-neutral-400" />
+        <span title="Sent to server" className={className}>
+          <Check size={12} className="text-slate-400 dark:text-slate-500" aria-hidden="true" />
+          <span className="sr-only">Message sent</span>
         </span>
       );
     case 'delivered':
       return (
-        <span title="Delivered to recipient" className={className} aria-label="Message delivered">
-          <CheckCheck size={12} className="text-neutral-400" />
+        <span title="Delivered to recipient" className={className}>
+          <CheckCheck size={12} className="text-slate-400 dark:text-slate-500" aria-hidden="true" />
+          <span className="sr-only">Message delivered</span>
         </span>
       );
     case 'read':
       return (
-        <span title="Read by recipient" className={className} aria-label="Message read">
-          <CheckCheck size={12} className="text-primary-600" />
+        <span title="Read by recipient" className={className}>
+          <CheckCheck size={12} className="text-primary-600 dark:text-primary-400" aria-hidden="true" />
+          <span className="sr-only">Message read</span>
         </span>
       );
     case 'failed':
       return (
-        <span title="Message failed to send" className={className} aria-label="Message delivery failed">
-          <AlertCircle size={12} className="text-rose-600" />
+        <span title="Message failed to send" className={className}>
+          <AlertCircle size={12} className="text-red-600 dark:text-red-400" aria-hidden="true" />
+          <span className="sr-only">Message failed to send</span>
         </span>
       );
     default:
       return null;
   }
 };
+
+export default MessageStatusIndicator;

@@ -41,7 +41,7 @@ export const AdminFilterBar: React.FC<AdminFilterBarProps> = ({
     searchQuery.trim().length > 0 || filters.some((f) => f.value && f.value !== 'all' && f.value !== '');
 
   return (
-    <div className="bg-white rounded-xl border border-neutral-200 p-3 sm:p-4 mb-5 shadow-xs space-y-3">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-3 sm:p-4 mb-5 shadow-xs space-y-3">
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
         {/* Search Bar */}
         <div className="relative flex-1 min-w-[240px]">
@@ -49,7 +49,7 @@ export const AdminFilterBar: React.FC<AdminFilterBarProps> = ({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={searchPlaceholder}
-            leftIcon={<Search size={16} className="text-neutral-400" />}
+            leftIcon={<Search size={16} className="text-slate-400" />}
             aria-label="Search filter"
             className="h-9.5 text-xs sm:text-sm"
           />
@@ -57,7 +57,7 @@ export const AdminFilterBar: React.FC<AdminFilterBarProps> = ({
             <button
               type="button"
               onClick={() => onSearchChange('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 focus:outline-none"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none"
               aria-label="Clear search input"
             >
               <X size={14} />
@@ -90,7 +90,7 @@ export const AdminFilterBar: React.FC<AdminFilterBarProps> = ({
               size="sm"
               onClick={onResetFilters}
               leftIcon={<RotateCcw size={13} />}
-              className="text-xs h-9 text-neutral-600 hover:text-neutral-900"
+              className="text-xs h-9 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
             >
               Reset
             </Button>
@@ -102,7 +102,7 @@ export const AdminFilterBar: React.FC<AdminFilterBarProps> = ({
 
       {/* Filter status summary line */}
       {typeof totalFilteredCount === 'number' && (
-        <div className="flex items-center justify-between text-xs text-neutral-500 pt-1 border-t border-neutral-100">
+        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800">
           <span>
             {hasActiveFilters ? (
               <span>Active filters applied &bull; Showing {totalFilteredCount} matches</span>

@@ -61,31 +61,31 @@ export const AdminActionDialog: React.FC<AdminActionDialogProps> = ({
     >
       <div className="space-y-4">
         {/* Affected Entity Banner */}
-        <div className="p-3 bg-neutral-100 rounded-lg text-sm border border-neutral-200">
-          <div className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+        <div className="p-3 bg-slate-100 dark:bg-slate-800/80 rounded-lg text-sm border border-slate-200 dark:border-slate-700">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Target Entity
           </div>
-          <div className="font-semibold text-neutral-900 mt-0.5">
+          <div className="font-semibold text-slate-900 dark:text-slate-100 mt-0.5">
             {config.entityName}
           </div>
-          <div className="text-xs text-neutral-500 font-mono mt-0.5">
+          <div className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
             Ref: {config.entityId}
           </div>
         </div>
 
         {/* Consequence Notice */}
-        <div className="flex items-start gap-3 p-3.5 rounded-lg bg-neutral-50 border border-neutral-200">
+        <div className="flex items-start gap-3 p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
           {getIcon()}
-          <div className="text-sm text-neutral-700">
-            <span className="font-semibold text-neutral-900 block mb-0.5">Operational Impact</span>
+          <div className="text-sm text-slate-700 dark:text-slate-300">
+            <span className="font-semibold text-slate-900 dark:text-slate-100 block mb-0.5">Operational Impact</span>
             {config.consequenceNotice}
           </div>
         </div>
 
         {/* Reason Field */}
         <div>
-          <label htmlFor="admin-action-reason" className="block text-xs font-medium text-neutral-700 mb-1.5">
-            Action Justification / Audit Reason {config.requireReason && <span className="text-error-500">*</span>}
+          <label htmlFor="admin-action-reason" className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+            Action Justification / Audit Reason {config.requireReason && <span className="text-red-500">*</span>}
           </label>
           <Textarea
             id="admin-action-reason"
@@ -97,7 +97,7 @@ export const AdminActionDialog: React.FC<AdminActionDialogProps> = ({
             aria-required={config.requireReason}
           />
           {config.requireReason && !reason.trim() && (
-            <p className="text-[11px] text-neutral-500 mt-1">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
               An explicit reason is mandatory for high-impact governance actions.
             </p>
           )}
@@ -118,12 +118,12 @@ export const AdminActionDialog: React.FC<AdminActionDialogProps> = ({
         )}
 
         {/* Action Controls */}
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-neutral-200">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
           <Button variant="outline" size="sm" onClick={handleClose} disabled={submitted}>
             Cancel
           </Button>
           <Button
-            variant={config.severity === 'destructive' ? 'destructive' : 'primary'}
+            variant={config.severity === 'destructive' ? 'danger' : 'primary'}
             size="sm"
             onClick={handleConfirm}
             disabled={isConfirmDisabled || submitted}

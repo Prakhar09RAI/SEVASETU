@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Paperclip, X } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { cn } from '../../lib/utils';
+import { cn } from '../../lib/cn';
 
 export interface MessageComposerProps {
   onSendMessage: (content: string, attachmentName?: string) => void;
@@ -49,7 +49,6 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
   };
 
   const handleSimulateAttachment = () => {
-    // Media attachment structure
     const fileName = prompt(
       'Simulate attachment file name (e.g., photo-of-leak.jpg or meter-reading.png):',
       'photo-of-site.jpg'
@@ -60,34 +59,34 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
   };
 
   return (
-    <div className={cn('p-3 sm:p-4 bg-white border-t border-neutral-200', className)}>
-      {/* Pending Attachment Chip */}
+    <div className={cn('p-3 sm:p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800', className)}>
+      {/* Attachment Pill if active */}
       {attachmentName && (
-        <div className="mb-2 flex items-center gap-1.5 px-3 py-1 bg-neutral-100 rounded-lg text-xs text-neutral-800 w-fit">
-          <Paperclip size={13} className="text-neutral-500" />
-          <span className="font-medium font-mono">{attachmentName}</span>
+        <div className="mb-2 inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-primary-50 dark:bg-primary-950/60 border border-primary-200 dark:border-primary-800 text-xs text-primary-800 dark:text-primary-300">
+          <Paperclip size={13} aria-hidden="true" />
+          <span className="truncate max-w-xs">{attachmentName}</span>
           <button
             type="button"
             onClick={() => setAttachmentName(null)}
-            className="ml-1 text-neutral-400 hover:text-neutral-700"
+            className="text-primary-600 hover:text-primary-900 dark:hover:text-white p-0.5 rounded focus-ring cursor-pointer"
             aria-label="Remove attachment"
           >
-            <X size={13} />
+            <X size={13} aria-hidden="true" />
           </button>
         </div>
       )}
 
-      <div className="flex items-end gap-2">
-        {/* Attachment Button */}
+      <div className="flex items-end gap-2.5">
+        {/* Attachment Trigger Button (min 44px tap target) */}
         <button
           type="button"
           onClick={handleSimulateAttachment}
           disabled={disabled}
-          title="Add photo or document (media upload pipeline)"
-          aria-label="Add attachment"
-          className="p-2 rounded-lg text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-40"
+          title="Attach site photo or document"
+          aria-label="Attach site photo or document"
+          className="w-11 h-11 flex items-center justify-center rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 focus-ring transition-colors shrink-0 disabled:opacity-50 cursor-pointer"
         >
-          <Paperclip size={18} />
+          <Paperclip size={18} aria-hidden="true" />
         </button>
 
         {/* Text Area */}
@@ -102,32 +101,34 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
             rows={1}
             maxLength={1000}
             className={cn(
-              'w-full py-2 px-3 text-xs sm:text-sm text-neutral-900 bg-neutral-50 border border-neutral-200 rounded-xl resize-none',
-              'focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:bg-white transition-all scrollbar-none',
-              'placeholder:text-neutral-400'
+              'w-full min-h-[44px] py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-slate-100 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl resize-none',
+              'focus:outline-none focus:ring-2 focus:ring-primary-600 focus:bg-white dark:focus:bg-slate-900 transition-all scrollbar-none',
+              'placeholder:text-slate-400 dark:placeholder:text-slate-500'
             )}
             aria-label="Message text"
           />
         </div>
 
-        {/* Send Action Button */}
+        {/* Send Action Button (44px min tap target) */}
         <Button
           type="button"
           variant="primary"
-          size="sm"
+          size="md"
           onClick={handleSend}
           disabled={disabled || (!content.trim() && !attachmentName)}
           aria-label="Send message"
-          className="h-9 px-3 shrink-0"
+          className="w-11 h-11 p-0 flex items-center justify-center shrink-0 rounded-xl shadow-xs"
         >
-          <Send size={15} />
+          <Send size={18} aria-hidden="true" />
         </Button>
       </div>
 
-      <div className="mt-1 flex items-center justify-between text-[10px] text-neutral-400 px-1">
-        <span>Press <kbd className="font-mono bg-neutral-100 px-1 rounded">Enter</kbd> to send, <kbd className="font-mono bg-neutral-100 px-1 rounded">Shift + Enter</kbd> for new line</span>
+      <div className="mt-1.5 flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 px-1">
+        <span>Press <kbd className="font-mono bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">Enter</kbd> to send, <kbd className="font-mono bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">Shift + Enter</kbd> for new line</span>
         <span>{content.length}/1000</span>
       </div>
     </div>
   );
 };
+
+export default MessageComposer;

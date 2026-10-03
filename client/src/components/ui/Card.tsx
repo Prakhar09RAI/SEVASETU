@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../lib/cn';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'elevated' | 'outline' | 'interactive' | 'subtle';
@@ -7,11 +7,16 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const variantStyles: Record<NonNullable<CardProps['variant']>, string> = {
-  default: 'bg-white border border-neutral-200 shadow-sm',
-  elevated: 'bg-white border border-neutral-200/80 shadow-md',
-  outline: 'bg-transparent border border-neutral-200',
-  interactive: 'bg-white border border-neutral-200 shadow-sm hover:shadow-md hover:border-neutral-300 transition-all cursor-pointer',
-  subtle: 'bg-neutral-50 border border-neutral-200/60',
+  default:
+    'bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm',
+  elevated:
+    'bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md shadow-slate-900/5 dark:shadow-black/20',
+  outline:
+    'bg-transparent border border-slate-200 dark:border-slate-800',
+  interactive:
+    'bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-lg hover:border-slate-300 dark:hover:border-slate-700 transition-all cursor-pointer lift',
+  subtle:
+    'bg-slate-50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-800/80',
 };
 
 const paddingStyles: Record<NonNullable<CardProps['padding']>, string> = {
@@ -27,7 +32,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          'rounded-xl text-neutral-900 transition-colors',
+          'rounded-2xl text-slate-900 dark:text-slate-100 transition-colors',
           variantStyles[variant],
           paddingStyles[padding],
           className
@@ -58,22 +63,26 @@ export const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
   ({ className, as: Component = 'h3', ...props }, ref) => (
     <Component
       ref={ref}
-      className={cn('font-semibold text-lg leading-tight tracking-tight text-neutral-900', className)}
+      className={cn(
+        'font-display font-bold text-lg leading-tight tracking-tight text-slate-900 dark:text-slate-100',
+        className
+      )}
       {...props}
     />
   )
 );
 CardTitle.displayName = 'CardTitle';
 
-export const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
-  ({ className, ...props }, ref) => (
-    <p
-      ref={ref}
-      className={cn('text-sm text-neutral-600', className)}
-      {...props}
-    />
-  )
-);
+export const CardDescription = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn('text-sm text-slate-600 dark:text-slate-400', className)}
+    {...props}
+  />
+));
 CardDescription.displayName = 'CardDescription';
 
 export const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
@@ -87,9 +96,14 @@ export const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('flex items-center pt-4 border-t border-neutral-100', className)}
+      className={cn(
+        'flex items-center pt-4 border-t border-slate-100 dark:border-slate-800/80',
+        className
+      )}
       {...props}
     />
   )
 );
 CardFooter.displayName = 'CardFooter';
+
+export default Card;

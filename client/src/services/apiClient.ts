@@ -3,9 +3,14 @@
  * Centralizes HTTP requests, base URL configuration, headers, and error handling.
  */
 
+const env: Record<string, string | undefined> =
+  typeof import.meta !== 'undefined' && import.meta?.env
+    ? (import.meta.env as Record<string, string | undefined>)
+    : {};
+
 const API_BASE_URL = (
-  import.meta.env.VITE_API_URL ||
-  import.meta.env.VITE_API_BASE_URL ||
+  env.VITE_API_URL ||
+  env.VITE_API_BASE_URL ||
   'http://localhost:5000/api'
 ).replace(/\/+$/, '');
 

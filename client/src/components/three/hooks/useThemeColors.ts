@@ -44,18 +44,18 @@ export function useThemeColors(): ThreeThemeColors {
     }
 
     return {
-      primary: tokens.colors.brand.primary, // #1E40AF
-      primaryGlow: '#3B82F6',
-      accent: tokens.colors.brand.accent, // #D97706
-      accentGlow: '#F59E0B',
-      success: tokens.colors.feedback.success, // #059669
-      warning: tokens.colors.feedback.warning, // #D97706
-      error: tokens.colors.feedback.error, // #DC2626
-      info: tokens.colors.feedback.info, // #0284C7
+      primary: tokens.colors.primary[600],
+      primaryGlow: tokens.colors.primary[400],
+      accent: tokens.colors.accent[600],
+      accentGlow: tokens.colors.accent[400],
+      success: tokens.colors.feedback.success,
+      warning: tokens.colors.feedback.warning,
+      error: tokens.colors.feedback.error,
+      info: tokens.colors.feedback.info,
       background: '#F8FAFC',
       gridLine: '#E2E8F0',
       nodeBackground: '#FFFFFF',
-      text: tokens.colors.text.primary, // #0F172A
+      text: tokens.colors.text.primary,
       isDark: false,
     };
   }, []);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../lib/utils';
+import { cn } from '../lib/cn';
 
 export interface PageContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
@@ -16,7 +16,7 @@ const maxWidthStyles: Record<NonNullable<PageContainerProps['maxWidth']>, string
 
 export const PageContainer: React.FC<PageContainerProps> = ({
   children,
-  maxWidth = 'lg',
+  maxWidth = 'xl',
   noPadding = false,
   className,
   ...props
@@ -26,7 +26,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       className={cn(
         'w-full mx-auto',
         maxWidthStyles[maxWidth],
-        !noPadding && 'px-4 sm:px-6 lg:px-8 py-6 sm:py-8',
+        !noPadding && 'px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10',
         className
       )}
       {...props}
@@ -35,3 +35,5 @@ export const PageContainer: React.FC<PageContainerProps> = ({
     </div>
   );
 };
+
+export default PageContainer;

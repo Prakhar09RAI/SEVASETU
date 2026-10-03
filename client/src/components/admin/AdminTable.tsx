@@ -4,7 +4,7 @@ import { EmptyState } from '../ui/EmptyState';
 import { Spinner } from '../ui/Spinner';
 import { Button } from '../ui/Button';
 import { Checkbox } from '../ui/Checkbox';
-import { cn } from '../../lib/utils';
+import { cn } from '../../lib/cn';
 
 export interface ColumnDef<T> {
   key: string;
@@ -66,9 +66,11 @@ export function AdminTable<T>({
   // 1. Loading State
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-neutral-200 p-12 flex flex-col items-center justify-center min-h-[300px]">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-12 flex flex-col items-center justify-center min-h-[300px]">
         <Spinner size="lg" />
-        <p className="text-sm font-medium text-neutral-600 mt-4">Loading operational records...</p>
+        <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-4">
+          Loading operational records...
+        </p>
       </div>
     );
   }
@@ -76,10 +78,10 @@ export function AdminTable<T>({
   // 2. Error State
   if (error) {
     return (
-      <div className="bg-white rounded-xl border border-error-200 p-8 flex flex-col items-center justify-center text-center min-h-[300px]">
-        <AlertCircle className="text-error-500 mb-3" size={36} />
-        <h3 className="text-base font-semibold text-neutral-900">Unable to load data</h3>
-        <p className="text-sm text-neutral-600 max-w-md mt-1">{error}</p>
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-red-200 dark:border-red-900/60 p-8 flex flex-col items-center justify-center text-center min-h-[300px]">
+        <AlertCircle className="text-red-500 mb-3" size={36} aria-hidden="true" />
+        <h3 className="text-base font-bold text-slate-900 dark:text-white">Unable to load data</h3>
+        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mt-1">{error}</p>
       </div>
     );
   }
@@ -87,7 +89,7 @@ export function AdminTable<T>({
   // 3. Empty State
   if (data.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-neutral-200 p-8">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8">
         <EmptyState
           title={emptyTitle}
           description={emptyDescription}
@@ -98,13 +100,12 @@ export function AdminTable<T>({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden shadow-xs">
-      {/* ======================================================== */}
-      {/* DESKTOP & TABLET: Semantic Table View                     */}
-      {/* ======================================================== */}
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
+      {/* Semantic Table View */}
       <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-left text-sm text-neutral-700 divide-y divide-neutral-200">
-          <thead className="bg-neutral-50 text-xs uppercase font-semibold text-neutral-600 tracking-wider">
+        <table className="w-full text-left text-sm text-slate-700 dark:text-slate-300 divide-y divide-slate-200 dark:divide-slate-800">
+          <caption className="sr-only">{emptyTitle || 'Administrative operational records'}</caption>
+          <thead className="bg-slate-50 dark:bg-slate-950/80 text-xs uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">
             <tr>
               {onSelectAll && (
                 <th scope="col" className="w-12 px-4 py-3.5">
@@ -122,12 +123,14 @@ export function AdminTable<T>({
                   <th
                     key={col.key}
                     scope="col"
-                    className={cn('px-4 py-3.5 select-none', col.headerClassName)}
+                    className={cn('px-4 py-3.5 select-none font-bold', col.headerClassName)}
                     aria-sort={
                       isCurrentSort
                         ? sortDirection === 'asc'
                           ? 'ascending'
                           : 'descending'
+                        : col.sortable
+                        ? 'none'
                         : undefined
                     }
                   >
@@ -135,17 +138,17 @@ export function AdminTable<T>({
                       <button
                         type="button"
                         onClick={() => onSort(col.key)}
-                        className="inline-flex items-center gap-1.5 font-semibold text-neutral-700 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded px-1 py-0.5 -mx-1"
+                        className="inline-flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus-ring rounded-lg px-1.5 py-1 -mx-1.5 transition-colors cursor-pointer"
                       >
                         <span>{col.header}</span>
                         {isCurrentSort ? (
                           sortDirection === 'asc' ? (
-                            <ArrowUp size={14} className="text-primary-600" />
+                            <ArrowUp size={14} className="text-primary-600 dark:text-primary-400" />
                           ) : (
-                            <ArrowDown size={14} className="text-primary-600" />
+                            <ArrowDown size={14} className="text-primary-600 dark:text-primary-400" />
                           )
                         ) : (
-                          <ArrowUpDown size={13} className="text-neutral-400" />
+                          <ArrowUpDown size={13} className="text-slate-400" />
                         )}
                       </button>
                     ) : (
@@ -156,7 +159,7 @@ export function AdminTable<T>({
               })}
             </tr>
           </thead>
-          <tbody className="divide-y divide-neutral-200 bg-white">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900">
             {data.map((item, index) => {
               const id = keyExtractor(item);
               const isSelected = selectedIds?.includes(id) ?? false;
@@ -165,8 +168,8 @@ export function AdminTable<T>({
                 <tr
                   key={id}
                   className={cn(
-                    'transition-colors hover:bg-neutral-50/80',
-                    isSelected && 'bg-primary-50/40'
+                    'transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/60',
+                    isSelected && 'bg-primary-50/40 dark:bg-primary-950/40'
                   )}
                 >
                   {onSelectRow && (
@@ -190,20 +193,15 @@ export function AdminTable<T>({
         </table>
       </div>
 
-      {/* ======================================================== */}
-      {/* MOBILE: Responsive Card / Stacked View                    */}
-      {/* ======================================================== */}
-      <div className="md:hidden divide-y divide-neutral-200">
+      {/* MOBILE: Responsive Card / Stacked View */}
+      <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
         {data.map((item, index) => {
           const id = keyExtractor(item);
           const isSelected = selectedIds?.includes(id) ?? false;
 
           if (mobileCardRenderer) {
             return (
-              <div
-                key={id}
-                className={cn('p-4 transition-colors', isSelected && 'bg-primary-50/40')}
-              >
+              <div key={id} className="p-4">
                 {mobileCardRenderer(item, isSelected)}
               </div>
             );
@@ -214,74 +212,63 @@ export function AdminTable<T>({
               key={id}
               className={cn(
                 'p-4 space-y-2.5 transition-colors',
-                isSelected && 'bg-primary-50/40'
+                isSelected && 'bg-primary-50/40 dark:bg-primary-950/40'
               )}
             >
-              <div className="flex items-center justify-between pb-2 border-b border-neutral-100">
-                <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                  Item #{index + 1}
-                </span>
-                {onSelectRow && (
+              {onSelectRow && (
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-xs font-semibold text-slate-500">Record #{index + 1}</span>
                   <Checkbox
                     checked={isSelected}
                     onChange={() => onSelectRow(id)}
-                    aria-label={`Select item ${index + 1}`}
+                    aria-label={`Select record ${index + 1}`}
                   />
-                )}
-              </div>
-              <div className="space-y-1.5">
-                {columns.map((col) => (
-                  <div key={col.key} className="flex items-start justify-between gap-2 text-xs">
-                    <span className="font-medium text-neutral-500 shrink-0">{col.header}:</span>
-                    <div className="text-right text-neutral-800 break-words">{col.render(item, index)}</div>
-                  </div>
-                ))}
-              </div>
+                </div>
+              )}
+              {columns.map((col) => (
+                <div key={col.key} className="flex justify-between items-baseline gap-2 text-xs">
+                  <span className="font-semibold text-slate-400">{col.header}:</span>
+                  <div className="text-right text-slate-900 dark:text-slate-100">{col.render(item, index)}</div>
+                </div>
+              ))}
             </div>
           );
         })}
       </div>
 
-      {/* ======================================================== */}
-      {/* PAGINATION CONTROLS                                       */}
-      {/* ======================================================== */}
-      <div className="px-4 py-3 bg-neutral-50 border-t border-neutral-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-600">
-        <div className="flex items-center gap-1.5 font-medium">
+      {/* Pagination Controls */}
+      {totalPages > 1 && onPageChange && (
+        <div className="p-4 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
           <span>
-            Showing <strong className="text-neutral-900">{data.length > 0 ? (page - 1) * pageSize + 1 : 0}</strong> to{' '}
-            <strong className="text-neutral-900">{Math.min(page * pageSize, totalItems || data.length)}</strong> of{' '}
-            <strong className="text-neutral-900">{totalItems || data.length}</strong> entries
+            Page <strong>{page}</strong> of <strong>{totalPages}</strong> ({totalItems} total records)
           </span>
-        </div>
 
-        {totalPages > 1 && onPageChange && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <Button
               variant="outline"
               size="sm"
               onClick={() => onPageChange(page - 1)}
               disabled={page <= 1}
-              aria-label="Previous Page"
-              className="h-7 px-2 text-xs"
+              aria-label="Previous page"
+              className="h-9 px-2.5"
             >
-              <ChevronLeft size={14} />
+              <ChevronLeft size={16} />
             </Button>
-            <span className="px-2 font-medium text-neutral-700">
-              Page {page} of {totalPages}
-            </span>
             <Button
               variant="outline"
               size="sm"
               onClick={() => onPageChange(page + 1)}
               disabled={page >= totalPages}
-              aria-label="Next Page"
-              className="h-7 px-2 text-xs"
+              aria-label="Next page"
+              className="h-9 px-2.5"
             >
-              <ChevronRight size={14} />
+              <ChevronRight size={16} />
             </Button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
+
+export default AdminTable;

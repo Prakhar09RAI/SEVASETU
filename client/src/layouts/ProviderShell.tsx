@@ -17,25 +17,29 @@ import {
   Bell,
   LogOut,
   MessageSquare,
+  Sun,
+  Moon,
+  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { NotificationBadge } from '../components/notifications';
-import { cn } from '../lib/utils';
+import { cn } from '../lib/cn';
+import { useTheme } from '../lib/useTheme';
 import type { NavItem } from '../components/navigation/types';
 
 export const PROVIDER_NAV_ITEMS: NavItem[] = [
-  { label: 'Overview', href: '/provider', icon: <LayoutDashboard size={15} /> },
-  { label: 'Requests', href: '/provider/requests', icon: <Inbox size={15} /> },
-  { label: 'Jobs', href: '/provider/jobs', icon: <Briefcase size={15} /> },
-  { label: 'Messages', href: '/provider/messages', icon: <MessageSquare size={15} /> },
-  { label: 'Availability', href: '/provider/availability', icon: <CalendarClock size={15} /> },
-  { label: 'Services', href: '/provider/services', icon: <Wrench size={15} /> },
-  { label: 'Profile', href: '/provider/profile', icon: <User size={15} /> },
-  { label: 'Earnings', href: '/provider/earnings', icon: <Wallet size={15} /> },
-  { label: 'Reviews', href: '/provider/reviews', icon: <Star size={15} /> },
-  { label: 'Alerts', href: '/provider/notifications', icon: <Bell size={15} /> },
+  { label: 'Overview', href: '/provider', icon: <LayoutDashboard size={16} /> },
+  { label: 'Requests', href: '/provider/requests', icon: <Inbox size={16} /> },
+  { label: 'Jobs', href: '/provider/jobs', icon: <Briefcase size={16} /> },
+  { label: 'Messages', href: '/provider/messages', icon: <MessageSquare size={16} /> },
+  { label: 'Availability', href: '/provider/availability', icon: <CalendarClock size={16} /> },
+  { label: 'Services', href: '/provider/services', icon: <Wrench size={16} /> },
+  { label: 'Profile', href: '/provider/profile', icon: <User size={16} /> },
+  { label: 'Earnings', href: '/provider/earnings', icon: <Wallet size={16} /> },
+  { label: 'Reviews', href: '/provider/reviews', icon: <Star size={16} /> },
+  { label: 'Alerts', href: '/provider/notifications', icon: <Bell size={16} /> },
 ];
 
 export interface ProviderShellProps {
@@ -46,40 +50,41 @@ export const ProviderShell: React.FC<ProviderShellProps> = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const { user, logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
 
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900 font-sans flex flex-col antialiased selection:bg-primary-100 selection:text-primary-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans flex flex-col antialiased selection:bg-primary-100 selection:text-primary-900">
       {/* Skip to Main Content Link for Accessibility */}
       <a
         href="#provider-main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary-600 focus:text-white focus:rounded-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary-700 focus:text-white focus:rounded-xl focus:shadow-xl focus-ring font-medium"
       >
         Skip to provider content
       </a>
 
       {/* Provider Header */}
-      <header className="sticky top-0 z-30 w-full bg-white/95 backdrop-blur-xs border-b border-neutral-200">
+      <header className="sticky top-0 z-40 w-full glass border-b border-slate-200/60 dark:border-slate-800/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Provider Brand Treatment */}
           <div className="flex items-center gap-3">
             <Link
               to="/provider"
-              className="flex items-center gap-3 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-lg p-1"
+              className="flex items-center gap-3 shrink-0 focus-ring rounded-xl p-1"
               aria-label="SevaSetu Provider Portal Home"
             >
-              <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-neutral-900 text-white font-bold text-base shadow-xs select-none">
+              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary-700 to-slate-900 text-white font-display font-extrabold text-base shadow-sm select-none">
                 S
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col text-left">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-base tracking-tight text-neutral-900 leading-tight">
+                  <span className="font-display font-bold text-base tracking-tight text-slate-900 dark:text-white leading-tight">
                     SevaSetu
                   </span>
-                  <Badge variant="info" size="sm" className="text-[10px] py-0 px-1.5 font-bold">
-                    PARTNER
+                  <Badge variant="success" size="sm" className="text-[10px] py-0 px-2 font-bold uppercase tracking-wider">
+                    Partner
                   </Badge>
                 </div>
-                <span className="text-[10px] text-neutral-500 font-medium tracking-wide uppercase">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-wide uppercase">
                   Service Provider Console
                 </span>
               </div>
@@ -98,11 +103,10 @@ export const ProviderShell: React.FC<ProviderShellProps> = ({ children }) => {
                 end={item.href === '/provider'}
                 className={({ isActive }) =>
                   cn(
-                    'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all select-none',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
+                    'relative inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all select-none focus-ring',
                     isActive
-                      ? 'bg-neutral-900 text-white shadow-xs'
-                      : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+                      ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
                   )
                 }
               >
@@ -114,12 +118,22 @@ export const ProviderShell: React.FC<ProviderShellProps> = ({ children }) => {
 
           {/* Action Area & Mode Switcher */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* Theme Switcher */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="w-10 h-10 inline-flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus-ring transition-colors cursor-pointer"
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDark ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} />}
+            </button>
+
             {/* Quick Messages Link */}
             <Link
               to="/provider/messages"
               title="Provider Messages"
               aria-label="Provider Messages"
-              className="p-1.5 rounded-lg text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+              className="w-10 h-10 inline-flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus-ring transition-colors"
             >
               <MessageSquare size={18} />
             </Link>
@@ -129,7 +143,7 @@ export const ProviderShell: React.FC<ProviderShellProps> = ({ children }) => {
               to="/provider/notifications"
               title="Notifications & Alerts"
               aria-label="Provider Notifications"
-              className="p-1.5 rounded-lg text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+              className="w-10 h-10 inline-flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus-ring transition-colors"
             >
               <NotificationBadge size={18} />
             </Link>
@@ -140,9 +154,9 @@ export const ProviderShell: React.FC<ProviderShellProps> = ({ children }) => {
                 variant="outline"
                 size="sm"
                 leftIcon={<ArrowLeftRight size={13} />}
-                className="text-xs h-8"
+                className="text-xs h-9"
               >
-                <span className="hidden sm:inline">Switch to</span> Customer Mode
+                <span className="hidden sm:inline">Customer</span> App
               </Button>
             </Link>
 
@@ -152,7 +166,7 @@ export const ProviderShell: React.FC<ProviderShellProps> = ({ children }) => {
                 variant="outline"
                 size="sm"
                 leftIcon={<Shield size={13} />}
-                className="text-xs h-8 hidden md:inline-flex"
+                className="text-xs h-9 hidden md:inline-flex"
               >
                 Admin
               </Button>
@@ -164,7 +178,7 @@ export const ProviderShell: React.FC<ProviderShellProps> = ({ children }) => {
                 size="sm"
                 onClick={logout}
                 leftIcon={<LogOut size={13} />}
-                className="text-xs h-8 text-neutral-600 hover:text-red-700"
+                className="text-xs h-9 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400"
               >
                 Sign Out
               </Button>
@@ -186,9 +200,9 @@ export const ProviderShell: React.FC<ProviderShellProps> = ({ children }) => {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-              aria-label="Toggle provider menu"
+              aria-label={isMobileMenuOpen ? 'Close provider menu' : 'Open provider menu'}
               aria-expanded={isMobileMenuOpen}
-              className="xl:hidden inline-flex items-center justify-center p-2 rounded-lg text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+              className="xl:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 focus-ring"
             >
               {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -197,12 +211,12 @@ export const ProviderShell: React.FC<ProviderShellProps> = ({ children }) => {
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="xl:hidden border-t border-neutral-200 bg-white px-4 py-3 space-y-1">
-            <div className="pb-2 mb-2 border-b border-neutral-100 flex items-center justify-between text-xs text-neutral-500">
+          <div className="xl:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 space-y-1">
+            <div className="pb-2 mb-2 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
               <span className="font-semibold uppercase tracking-wider">Partner Menu</span>
-              <span className="flex items-center gap-1 text-[11px]">
-                <Shield size={12} className="text-emerald-600" />
-                Verified Portal
+              <span className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                <Shield size={12} />
+                Verified Partner
               </span>
             </div>
             {PROVIDER_NAV_ITEMS.map((item) => (
@@ -213,10 +227,10 @@ export const ProviderShell: React.FC<ProviderShellProps> = ({ children }) => {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold transition-colors',
+                    'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors',
                     isActive
-                      ? 'bg-neutral-900 text-white'
-                      : 'text-neutral-700 hover:bg-neutral-100'
+                      ? 'bg-slate-900 text-white dark:bg-slate-800'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                   )
                 }
               >
@@ -230,11 +244,16 @@ export const ProviderShell: React.FC<ProviderShellProps> = ({ children }) => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex w-full">
-        {/* Optional Provider Sidebar on medium screens */}
-        {showSidebar && (
-          <aside className="hidden lg:block xl:hidden w-56 border-r border-neutral-200 bg-white p-4 space-y-1 shrink-0">
-            <div className="pb-2 mb-2 border-b border-neutral-100 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-              Navigation
+        {/* Provider Sidebar on medium screens / or expandable */}
+        <aside
+          className={cn(
+            'border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-col justify-between shrink-0 transition-all',
+            showSidebar ? 'flex w-64' : 'hidden xl:flex xl:w-64'
+          )}
+        >
+          <div className="p-4 space-y-1">
+            <div className="pb-2 mb-2 border-b border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-400 uppercase tracking-wider">
+              Partner Workspace
             </div>
             {PROVIDER_NAV_ITEMS.map((item) => (
               <NavLink
@@ -243,19 +262,62 @@ export const ProviderShell: React.FC<ProviderShellProps> = ({ children }) => {
                 end={item.href === '/provider'}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors',
+                    'relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group focus-ring',
                     isActive
-                      ? 'bg-neutral-900 text-white'
-                      : 'text-neutral-700 hover:bg-neutral-100'
+                      ? 'bg-primary-50 text-primary-800 font-semibold dark:bg-primary-950/70 dark:text-primary-300 shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
                   )
                 }
               >
-                <span className="shrink-0">{item.icon}</span>
-                <span>{item.label}</span>
+                {({ isActive }) => (
+                  <>
+                    {isActive && (
+                      <span
+                        className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-primary-600 dark:bg-primary-400 rounded-r-full"
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span className="shrink-0">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </>
+                )}
               </NavLink>
             ))}
-          </aside>
-        )}
+          </div>
+
+          {/* Profile-Readiness Widget at bottom of Sidebar */}
+          <div className="p-4 m-3 rounded-2xl bg-gradient-to-br from-warm-50 to-warm-100 dark:from-warm-950/40 dark:to-warm-900/40 border border-warm-200 dark:border-warm-800/60 text-left">
+            <div className="flex items-center gap-2 mb-1.5">
+              <Sparkles size={14} className="text-warm-600 dark:text-warm-400 shrink-0" aria-hidden="true" />
+              <span className="text-xs font-bold text-warm-900 dark:text-warm-100">Profile Readiness</span>
+            </div>
+            <p className="text-[11px] text-warm-800 dark:text-warm-300 mb-2 leading-relaxed">
+              Profile 85% complete — add bank details to enable automatic payouts.
+            </p>
+            {/* 6px Progress Bar */}
+            <div
+              role="progressbar"
+              aria-label="Profile readiness progress"
+              aria-valuenow={85}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              className="w-full h-1.5 bg-warm-200/80 dark:bg-warm-950 rounded-full overflow-hidden"
+            >
+              <div
+                className="h-full bg-emerald-600 rounded-full transition-all duration-500"
+                style={{ width: '85%' }}
+              />
+            </div>
+            <div className="mt-2 text-right">
+              <Link
+                to="/provider/profile"
+                className="text-[11px] font-semibold text-primary-700 dark:text-primary-400 hover:underline"
+              >
+                Complete Now →
+              </Link>
+            </div>
+          </div>
+        </aside>
 
         {/* Content Viewport */}
         <main
@@ -268,21 +330,21 @@ export const ProviderShell: React.FC<ProviderShellProps> = ({ children }) => {
       </div>
 
       {/* Provider Footer */}
-      <footer className="border-t border-neutral-200 bg-white py-4 px-4 sm:px-6 lg:px-8 mt-auto text-xs text-neutral-500">
+      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-4 px-4 sm:px-6 lg:px-8 mt-auto text-xs text-slate-500 dark:text-slate-400">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-neutral-800">SevaSetu Partner Portal</span>
+            <span className="font-semibold text-slate-800 dark:text-slate-200">SevaSetu Partner Portal</span>
             <span>•</span>
-            <span>Local Services Platform</span>
+            <span>Local Services Marketplace</span>
           </div>
           <div className="flex items-center gap-4 text-[11px]">
-            <Link to="/provider/profile" className="hover:text-neutral-800 transition-colors">
+            <Link to="/provider/profile" className="hover:text-slate-800 dark:hover:text-white transition-colors">
               Profile
             </Link>
-            <Link to="/provider/availability" className="hover:text-neutral-800 transition-colors">
+            <Link to="/provider/availability" className="hover:text-slate-800 dark:hover:text-white transition-colors">
               Operating Hours
             </Link>
-            <Link to="/" className="hover:text-neutral-800 transition-colors">
+            <Link to="/" className="hover:text-slate-800 dark:hover:text-white transition-colors">
               Customer Portal
             </Link>
           </div>
@@ -291,3 +353,5 @@ export const ProviderShell: React.FC<ProviderShellProps> = ({ children }) => {
     </div>
   );
 };
+
+export default ProviderShell;

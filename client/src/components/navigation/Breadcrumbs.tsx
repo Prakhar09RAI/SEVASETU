@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronRight, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { cn } from '../../lib/utils';
+import { cn } from '../../lib/cn';
 
 export interface BreadcrumbItem {
   label: string;
@@ -25,7 +25,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   return (
     <nav
       aria-label="Breadcrumb"
-      className={cn('flex items-center text-xs text-neutral-600', className)}
+      className={cn('flex items-center text-xs text-slate-500 dark:text-slate-400', className)}
       {...props}
     >
       <ol className="flex flex-wrap items-center gap-1.5 sm:gap-2">
@@ -33,7 +33,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
           <li className="inline-flex items-center">
             <Link
               to="/"
-              className="inline-flex items-center text-neutral-500 hover:text-neutral-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded p-0.5"
+              className="inline-flex items-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors focus-ring rounded-md p-1"
               aria-label="Home"
             >
               <Home size={14} aria-hidden="true" />
@@ -49,7 +49,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
               {(showHomeIcon || index > 0) && (
                 <ChevronRight
                   size={12}
-                  className="text-neutral-400 shrink-0 select-none"
+                  className="text-slate-400 dark:text-slate-600 shrink-0 select-none"
                   aria-hidden="true"
                 />
               )}
@@ -58,7 +58,9 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
                 <span
                   className={cn(
                     'font-medium truncate max-w-[200px] sm:max-w-none',
-                    isLast ? 'text-neutral-900' : 'text-neutral-600'
+                    isLast
+                      ? 'text-slate-900 dark:text-slate-100 font-semibold'
+                      : 'text-slate-600 dark:text-slate-400'
                   )}
                   aria-current={isLast ? 'page' : undefined}
                 >
@@ -68,7 +70,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
               ) : (
                 <Link
                   to={item.href}
-                  className="hover:text-neutral-900 transition-colors truncate max-w-[160px] sm:max-w-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded p-0.5"
+                  className="hover:text-slate-900 dark:hover:text-white transition-colors truncate max-w-[160px] sm:max-w-none focus-ring rounded-md p-0.5"
                 >
                   {item.icon && <span className="mr-1.5 inline-flex">{item.icon}</span>}
                   {item.label}
@@ -81,3 +83,5 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
     </nav>
   );
 };
+
+export default Breadcrumbs;

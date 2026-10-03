@@ -1,59 +1,67 @@
-import React from 'react';
-import { cn } from '../../lib/utils';
+import type { HTMLAttributes } from 'react';
+import { forwardRef } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '../../lib/cn';
 
-export interface SpinnerProps extends React.HTMLAttributes<HTMLDivElement> {
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  variant?: 'primary' | 'current' | 'white' | 'neutral';
+const spinnerVariants = cva('inline-flex items-center justify-center shrink-0 animate-spin', {
+  variants: {
+    size: {
+      xs: 'w-3 h-3',
+      sm: 'w-4 h-4',
+      md: 'w-6 h-6',
+      lg: 'w-8 h-8',
+      xl: 'w-10 h-10',
+    },
+    variant: {
+      primary: 'text-primary-600 dark:text-primary-400',
+      current: 'text-current',
+      white: 'text-white',
+      neutral: 'text-slate-600 dark:text-slate-400',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+    variant: 'primary',
+  },
+});
+
+export interface SpinnerProps
+  extends HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof spinnerVariants> {
   label?: string;
 }
 
-const sizeStyles: Record<NonNullable<SpinnerProps['size']>, string> = {
-  xs: 'w-3 h-3 border-2',
-  sm: 'w-4 h-4 border-2',
-  md: 'w-6 h-6 border-2',
-  lg: 'w-8 h-8 border-3',
-  xl: 'w-12 h-12 border-4',
-};
-
-const variantStyles: Record<NonNullable<SpinnerProps['variant']>, { track: string; head: string }> = {
-  primary: {
-    track: 'border-primary-100',
-    head: 'border-t-primary-600',
-  },
-  current: {
-    track: 'border-current/20',
-    head: 'border-t-current',
-  },
-  white: {
-    track: 'border-white/30',
-    head: 'border-t-white',
-  },
-  neutral: {
-    track: 'border-neutral-200',
-    head: 'border-t-neutral-700',
-  },
-};
-
-export const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
-  ({ className, size = 'md', variant = 'primary', label = 'Loading...', ...props }, ref) => {
-    const config = variantStyles[variant];
-
+export const Spinner = forwardRef<HTMLDivElement, SpinnerProps>(
+  ({ className, size, variant, label = 'Loading...', ...props }, ref) => {
     return (
       <div
         ref={ref}
         role="status"
         aria-label={label}
-        className={cn('inline-flex items-center justify-center shrink-0', className)}
+        className={cn('inline-flex items-center justify-center', className)}
         {...props}
       >
-        <span
-          className={cn(
-            'rounded-full animate-spin',
-            sizeStyles[size],
-            config.track,
-            config.head
-          )}
-        />
+        <svg
+          className={cn(spinnerVariants({ size, variant }))}
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          />
+        </svg>
         <span className="sr-only">{label}</span>
       </div>
     );
@@ -61,3 +69,4 @@ export const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
 );
 
 Spinner.displayName = 'Spinner';
+export default Spinner;

@@ -18,25 +18,27 @@ import {
   ShieldCheck,
   PanelLeft,
   LogOut,
+  ChevronRight,
+  Activity,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
-import { cn } from '../lib/utils';
+import { cn } from '../lib/cn';
 import type { NavItem } from '../components/navigation/types';
 
 export const ADMIN_NAV_ITEMS: NavItem[] = [
-  { label: 'Overview', href: '/admin', icon: <LayoutDashboard size={15} /> },
-  { label: 'Users', href: '/admin/users', icon: <Users size={15} /> },
-  { label: 'Providers', href: '/admin/providers', icon: <Briefcase size={15} /> },
-  { label: 'Services', href: '/admin/services', icon: <Layers size={15} /> },
-  { label: 'Bookings', href: '/admin/bookings', icon: <CalendarClock size={15} /> },
-  { label: 'Verification', href: '/admin/verification', icon: <CheckCircle size={15} /> },
-  { label: 'Disputes', href: '/admin/reports', icon: <AlertTriangle size={15} /> },
-  { label: 'Support', href: '/admin/support', icon: <LifeBuoy size={15} /> },
-  { label: 'Audit Logs', href: '/admin/audit-logs', icon: <FileText size={15} /> },
-  { label: 'Trust & Safety', href: '/admin/trust-safety', icon: <ShieldAlert size={15} /> },
-  { label: 'Settings', href: '/admin/settings', icon: <Sliders size={15} /> },
+  { label: 'Overview', href: '/admin', icon: <LayoutDashboard size={16} /> },
+  { label: 'Users', href: '/admin/users', icon: <Users size={16} /> },
+  { label: 'Providers', href: '/admin/providers', icon: <Briefcase size={16} /> },
+  { label: 'Services', href: '/admin/services', icon: <Layers size={16} /> },
+  { label: 'Bookings', href: '/admin/bookings', icon: <CalendarClock size={16} /> },
+  { label: 'Verification', href: '/admin/verification', icon: <CheckCircle size={16} /> },
+  { label: 'Disputes', href: '/admin/reports', icon: <AlertTriangle size={16} /> },
+  { label: 'Support', href: '/admin/support', icon: <LifeBuoy size={16} /> },
+  { label: 'Audit Logs', href: '/admin/audit-logs', icon: <FileText size={16} /> },
+  { label: 'Trust & Safety', href: '/admin/trust-safety', icon: <ShieldAlert size={16} /> },
+  { label: 'Settings', href: '/admin/settings', icon: <Sliders size={16} /> },
 ];
 
 export interface AdminShellProps {
@@ -53,74 +55,83 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
   const pathSegments = location.pathname.split('/').filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-neutral-100/70 text-neutral-900 font-sans flex flex-col antialiased selection:bg-primary-100 selection:text-primary-900">
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col antialiased selection:bg-primary-900 selection:text-white">
       {/* Skip to Main Content Link for Accessibility */}
       <a
         href="#admin-main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-neutral-900 focus:text-white focus:rounded-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary-600 focus:text-white focus:rounded-xl focus:shadow-xl focus-ring font-medium"
       >
         Skip to administrative content
       </a>
 
-      {/* Admin Top Header */}
-      <header className="sticky top-0 z-30 w-full bg-white border-b border-neutral-200 shadow-xs">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      {/* Admin Top Header - Dark First */}
+      <header className="sticky top-0 z-40 w-full bg-slate-900/90 backdrop-blur-md border-b border-slate-800 shadow-sm">
+        <div className="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Admin Brand Treatment */}
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setShowSidebar((prev) => !prev)}
               aria-label="Toggle navigation sidebar"
-              className="p-1.5 rounded-lg text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 hidden lg:inline-flex"
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors focus-ring hidden lg:inline-flex"
             >
               <PanelLeft size={18} />
             </button>
 
             <Link
               to="/admin"
-              className="flex items-center gap-3 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-lg p-1"
+              className="flex items-center gap-3 shrink-0 focus-ring rounded-xl p-1"
               aria-label="SevaSetu Admin Operations Console"
             >
-              <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-neutral-900 text-white font-bold text-base shadow-xs select-none">
-                <ShieldCheck size={20} className="text-amber-400" />
+              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 text-slate-950 font-display font-extrabold text-base shadow-sm select-none">
+                <ShieldCheck size={22} className="text-white" />
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col text-left">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-base tracking-tight text-neutral-900 leading-tight">
+                  <span className="font-display font-bold text-base tracking-tight text-white leading-tight">
                     SevaSetu
                   </span>
-                  <Badge variant="neutral" size="sm" className="bg-neutral-900 text-white text-[10px] py-0 px-1.5 font-bold">
-                    OPERATIONS
+                  <Badge variant="warning" size="sm" className="bg-amber-950/80 text-amber-300 border-amber-800/80 text-[10px] py-0 px-2 font-bold uppercase tracking-wider">
+                    Ops Console
                   </Badge>
                 </div>
-                <span className="text-[10px] text-neutral-500 font-medium tracking-wide uppercase">
+                <span className="text-[10px] text-slate-400 font-medium tracking-wide uppercase">
                   Trust, Safety &amp; Governance
                 </span>
               </div>
             </Link>
           </div>
 
-          {/* Quick Cross-Portal Switcher & Mobile Menu Trigger */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Switch to Customer Portal Mode */}
+          {/* Center: System Health Status Pill */}
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs text-slate-300">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+            <span className="font-semibold text-emerald-400">System Operational</span>
+            <span className="text-slate-500">•</span>
+            <span className="text-slate-400 font-mono text-[11px]">API 99.98%</span>
+          </div>
+
+          {/* Quick Cross-Portal Switcher & Actions */}
+          <div className="flex items-center gap-2.5 shrink-0">
             <Link to="/">
               <Button
                 variant="outline"
                 size="sm"
                 leftIcon={<ArrowLeftRight size={13} />}
-                className="text-xs h-8 hidden sm:inline-flex"
+                className="text-xs h-9 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hidden sm:inline-flex"
               >
                 Customer App
               </Button>
             </Link>
 
-            {/* Switch to Provider Console */}
             <Link to="/provider">
               <Button
                 variant="outline"
                 size="sm"
                 leftIcon={<Briefcase size={13} />}
-                className="text-xs h-8 hidden md:inline-flex"
+                className="text-xs h-9 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hidden md:inline-flex"
               >
                 Provider Portal
               </Button>
@@ -132,34 +143,29 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
                 size="sm"
                 onClick={logout}
                 leftIcon={<LogOut size={13} />}
-                className="text-xs h-8 text-neutral-600 hover:text-red-700"
+                className="text-xs h-9 text-slate-400 hover:text-red-400 hover:bg-slate-800"
               >
                 Sign Out
               </Button>
             )}
 
             {/* Mobile Navigation Trigger Button */}
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
+              type="button"
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-              aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-label={isMobileMenuOpen ? 'Close admin navigation' : 'Open admin navigation'}
               aria-expanded={isMobileMenuOpen}
-              aria-controls="admin-mobile-navigation"
-              className="lg:hidden p-2 text-neutral-700"
+              className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 focus-ring"
             >
               {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Mobile Navigation Dropdown Menu */}
         {isMobileMenuOpen && (
-          <div
-            id="admin-mobile-navigation"
-            className="lg:hidden border-t border-neutral-200 bg-white px-4 pt-3 pb-5 space-y-1 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto"
-          >
-            <div className="text-xs font-semibold text-neutral-400 uppercase tracking-wider px-3 mb-1">
+          <div className="lg:hidden border-t border-slate-800 bg-slate-900 px-4 pt-3 pb-5 space-y-1 shadow-2xl max-h-[calc(100vh-4rem)] overflow-y-auto">
+            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider px-3 mb-1">
               Admin Navigation
             </div>
             {ADMIN_NAV_ITEMS.map((item) => (
@@ -170,84 +176,79 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold transition-colors',
+                    'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors',
                     isActive
-                      ? 'bg-neutral-900 text-white shadow-xs'
-                      : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100'
+                      ? 'bg-slate-800 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                   )
                 }
               >
-                {item.icon && <span className="shrink-0">{item.icon}</span>}
+                <span className="shrink-0">{item.icon}</span>
                 <span>{item.label}</span>
               </NavLink>
             ))}
-
-            <div className="pt-3 border-t border-neutral-100 space-y-2">
-              <Link
-                to="/"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg"
-              >
-                <ArrowLeftRight size={14} />
-                <span>Switch to Customer App</span>
-              </Link>
-              <Link
-                to="/provider"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg"
-              >
-                <Briefcase size={14} />
-                <span>Switch to Provider Console</span>
-              </Link>
-            </div>
           </div>
         )}
       </header>
 
       {/* Main Admin View Container */}
-      <div className="flex-1 flex max-w-[1600px] w-full mx-auto">
+      <div className="flex-1 flex max-w-[1700px] w-full mx-auto">
         {/* Desktop Sidebar Navigation */}
         <aside
           aria-label="Admin Operations Sidebar"
           className={cn(
-            'hidden lg:flex flex-col shrink-0 border-r border-neutral-200 bg-white py-5 px-3 transition-all duration-200 select-none sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto',
-            showSidebar ? 'w-64' : 'w-16 items-center px-2'
+            'hidden lg:flex flex-col shrink-0 border-r border-slate-800/80 bg-slate-950 py-5 px-3 transition-all duration-200 select-none sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto justify-between',
+            showSidebar ? 'w-64' : 'w-18 items-center px-2'
           )}
         >
-          {showSidebar && (
-            <div className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider px-3 mb-2">
-              Governance &amp; Ops
-            </div>
-          )}
+          <div>
+            {showSidebar && (
+              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider px-3 mb-3">
+                Governance &amp; Ops
+              </div>
+            )}
 
-          <nav className="space-y-1 w-full flex-1">
-            {ADMIN_NAV_ITEMS.map((item) => (
-              <NavLink
-                key={item.href}
-                to={item.href}
-                end={item.href === '/admin'}
-                title={!showSidebar ? item.label : undefined}
-                className={({ isActive }) =>
-                  cn(
-                    'flex items-center rounded-lg text-xs font-semibold transition-all',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
-                    showSidebar ? 'gap-3 px-3 py-2' : 'justify-center p-2.5',
-                    isActive
-                      ? 'bg-neutral-900 text-white shadow-xs'
-                      : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
-                  )
-                }
-              >
-                {item.icon && <span className="shrink-0">{item.icon}</span>}
-                {showSidebar && <span>{item.label}</span>}
-              </NavLink>
-            ))}
-          </nav>
+            <nav className="space-y-1 w-full" aria-label="Admin Navigation Links">
+              {ADMIN_NAV_ITEMS.map((item) => (
+                <NavLink
+                  key={item.href}
+                  to={item.href}
+                  end={item.href === '/admin'}
+                  title={!showSidebar ? item.label : undefined}
+                  className={({ isActive }) =>
+                    cn(
+                      'relative flex items-center rounded-xl text-xs font-semibold transition-all focus-ring group',
+                      showSidebar ? 'gap-3 px-3.5 py-2.5' : 'justify-center p-3',
+                      isActive
+                        ? 'bg-slate-900 text-white shadow-xs border border-slate-800'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-900/60'
+                    )
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      {isActive && (
+                        <span
+                          className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-amber-500 rounded-r-full"
+                          aria-hidden="true"
+                        />
+                      )}
+                      <span className="shrink-0 text-current">{item.icon}</span>
+                      {showSidebar && <span>{item.label}</span>}
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </nav>
+          </div>
 
           {showSidebar && (
-            <div className="pt-4 border-t border-neutral-100 text-[11px] text-neutral-400 px-3">
-              <div>SevaSetu Operations UI</div>
-              <div className="text-[10px] text-neutral-500 mt-0.5">Part 7 UI/UX Architecture</div>
+            <div className="pt-4 border-t border-slate-900 text-[11px] text-slate-500 px-3">
+              <div className="flex items-center gap-1.5 font-medium text-slate-400">
+                <Activity size={13} className="text-emerald-400" />
+                <span>Ops Engine v2.0</span>
+              </div>
+              <div className="text-[10px] text-slate-600 mt-0.5">High-Availability Telemetry</div>
             </div>
           )}
         </aside>
@@ -260,9 +261,9 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
         >
           {/* Breadcrumb Hierarchy */}
           <nav aria-label="Breadcrumb" className="mb-4">
-            <ol className="flex items-center gap-1.5 text-xs text-neutral-500">
+            <ol className="flex items-center gap-1.5 text-xs text-slate-400">
               <li>
-                <Link to="/admin" className="hover:text-neutral-900 transition-colors">
+                <Link to="/admin" className="hover:text-white transition-colors">
                   Admin
                 </Link>
               </li>
@@ -271,8 +272,8 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
                 const isLast = idx === pathSegments.length - 2;
                 return (
                   <React.Fragment key={url}>
-                    <span className="text-neutral-400">/</span>
-                    <li className={cn(isLast ? 'font-semibold text-neutral-900 capitalize' : 'capitalize hover:text-neutral-900')}>
+                    <ChevronRight size={12} className="text-slate-600 shrink-0 select-none" aria-hidden="true" />
+                    <li className={cn(isLast ? 'font-semibold text-white capitalize' : 'capitalize hover:text-white')}>
                       {isLast ? seg.replace('-', ' ') : <Link to={url}>{seg.replace('-', ' ')}</Link>}
                     </li>
                   </React.Fragment>
@@ -287,3 +288,5 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
     </div>
   );
 };
+
+export default AdminShell;

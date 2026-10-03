@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../lib/cn';
 
 export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'text' | 'circular' | 'rectangular' | 'card';
@@ -8,10 +8,10 @@ export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const variantStyles: Record<NonNullable<SkeletonProps['variant']>, string> = {
-  text: 'h-4 w-full rounded',
+  text: 'h-4 w-full rounded-md',
   circular: 'rounded-full',
-  rectangular: 'rounded-md',
-  card: 'h-32 w-full rounded-xl',
+  rectangular: 'rounded-xl',
+  card: 'h-32 w-full rounded-2xl',
 };
 
 export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
@@ -26,7 +26,7 @@ export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
           ...style,
         }}
         className={cn(
-          'animate-pulse bg-neutral-200/80',
+          'motion-safe:animate-pulse bg-slate-200 dark:bg-slate-800',
           variantStyles[variant],
           className
         )}
@@ -37,3 +37,4 @@ export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
 );
 
 Skeleton.displayName = 'Skeleton';
+export default Skeleton;

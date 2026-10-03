@@ -45,12 +45,12 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
 
   if (!conversation) {
     return (
-      <div className="flex-1 flex items-center justify-center p-8 bg-neutral-50/50 text-center">
-        <div className="max-w-sm space-y-3 text-neutral-500">
-          <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto text-neutral-400">
-            <MessageSquare size={24} />
+      <div className="flex-1 flex items-center justify-center p-8 bg-slate-50/50 dark:bg-slate-950/50 text-center">
+        <div className="max-w-sm space-y-3 text-slate-500 dark:text-slate-400">
+          <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
+            <MessageSquare size={26} aria-hidden="true" />
           </div>
-          <h3 className="font-semibold text-neutral-800 text-sm">
+          <h3 className="font-display font-bold text-slate-800 dark:text-slate-200 text-base">
             Select a conversation
           </h3>
           <p className="text-xs leading-relaxed">
@@ -62,67 +62,69 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
   }
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-neutral-50/30 overflow-hidden">
+    <div className="flex-1 flex flex-col h-full bg-slate-50/40 dark:bg-slate-950 overflow-hidden text-left">
       {/* Conversation Top Header */}
-      <div className="p-3.5 sm:p-4 bg-white border-b border-neutral-200 flex items-center justify-between gap-3">
+      <div className="p-3.5 sm:p-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-9 h-9 rounded-full bg-neutral-200 flex items-center justify-center font-bold text-neutral-700 text-xs shrink-0">
+          <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-700 dark:text-slate-200 text-xs shrink-0 overflow-hidden">
             {conversation.otherPartyAvatar ? (
               <img
                 src={conversation.otherPartyAvatar}
                 alt={conversation.otherPartyName}
-                className="w-full h-full rounded-full object-cover"
+                className="w-full h-full object-cover"
               />
             ) : (
-              <User size={16} />
+              <User size={18} />
             )}
           </div>
 
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <h3 className="font-semibold text-sm text-neutral-900 truncate">
+              <h3 className="font-display font-bold text-sm text-slate-900 dark:text-white truncate">
                 {conversation.otherPartyName}
               </h3>
-              <Badge variant="neutral" size="sm" className="text-[10px] uppercase py-0 px-1 font-semibold">
+              <Badge variant="neutral" size="sm" className="text-[10px] uppercase py-0 px-1.5 font-semibold">
                 {conversation.otherPartyRole}
               </Badge>
             </div>
-            <p className="text-[11px] text-neutral-500 truncate">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
               {conversation.serviceTitle}
             </p>
           </div>
         </div>
 
-        {/* Action Pathway (Support / Guidance) */}
+        {/* Support Action Pathway */}
         <div className="flex items-center gap-2 shrink-0">
           {onOpenSupport && (
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              leftIcon={<LifeBuoy size={13} />}
+              leftIcon={<LifeBuoy size={14} className="text-amber-500" />}
               onClick={onOpenSupport}
-              className="text-xs h-8 hidden sm:inline-flex"
+              className="text-xs h-9"
             >
-              Help &amp; Safety
+              Support
             </Button>
           )}
         </div>
       </div>
 
-      {/* Pinned Service / Booking Context Bar */}
+      {/* Context Banner */}
       {context && <ConversationContext context={context} />}
 
-      {/* Message Timeline Area */}
+      {/* Message Stream with role="log" and aria-live="polite" */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-2 scrollbar-thin"
+        role="log"
+        aria-live="polite"
+        aria-label="Conversation message history"
+        className="flex-1 overflow-y-auto p-4 space-y-1"
       >
-        {isLoading ? (
-          <div className="space-y-4">
-            <div className="w-3/4 h-12 bg-neutral-200/60 rounded-xl animate-pulse" />
-            <div className="w-2/3 h-12 bg-neutral-200/60 rounded-xl animate-pulse ml-auto" />
+        {messages.length === 0 ? (
+          <div className="h-full flex items-center justify-center text-center text-xs text-slate-400 py-12">
+            <span>No messages yet. Send a message to coordinate your appointment!</span>
           </div>
-        ) : messages.length > 0 ? (
+        ) : (
           messages.map((msg) => (
             <MessageBubble
               key={msg.id}
@@ -130,16 +132,13 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
               isSelf={msg.senderId === currentUserId}
             />
           ))
-        ) : (
-          <div className="py-12 text-center text-xs text-neutral-400 space-y-1">
-            <p className="font-medium text-neutral-600">Start of conversation</p>
-            <p>Direct coordination messages between customer and service technician appear here.</p>
-          </div>
         )}
       </div>
 
-      {/* Message Composer */}
-      <MessageComposer onSendMessage={onSendMessage} />
+      {/* Message Input Composer */}
+      <MessageComposer onSendMessage={onSendMessage} disabled={isLoading} />
     </div>
   );
 };
+
+export default ConversationView;

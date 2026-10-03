@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../lib/utils';
+import { cn } from '../lib/cn';
 import { Breadcrumbs, type BreadcrumbItem } from '../components/navigation/Breadcrumbs';
 
 export interface PageHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -19,7 +19,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 }) => {
   return (
     <div
-      className={cn('space-y-3 pb-6 border-b border-neutral-200', className)}
+      className={cn('space-y-3 pb-6 sm:pb-8 border-b border-slate-200/80 dark:border-slate-800 text-left', className)}
       {...props}
     >
       {breadcrumbs && breadcrumbs.length > 0 && (
@@ -27,12 +27,12 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       )}
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 leading-tight">
+        <div className="space-y-1.5">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-tight">
             {title}
           </h1>
           {description && (
-            <p className="text-sm sm:text-base text-neutral-600 max-w-2xl leading-relaxed">
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
               {description}
             </p>
           )}
@@ -47,3 +47,5 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
     </div>
   );
 };
+
+export default PageHeader;

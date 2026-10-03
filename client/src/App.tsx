@@ -8,25 +8,19 @@ import {
   Activity,
   Layers,
   Layout,
-  PlusCircle,
   ArrowLeft,
   PanelLeft,
   Briefcase,
   MessageSquare,
   Bell,
   ShieldCheck,
-  LogIn,
-  UserPlus,
-  LogOut,
   User,
 } from 'lucide-react';
 import { ApplicationShell } from './layouts/ApplicationShell';
 import { ProviderShell } from './layouts/ProviderShell';
 import { AdminShell } from './layouts/AdminShell';
 import { Button } from './components/ui/Button';
-import { Badge } from './components/ui/Badge';
 import { EmptyState } from './components/ui/EmptyState';
-import { NotificationBadge } from './components/notifications';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LoginPage, RegisterPage, UnauthorizedPage } from './pages/auth';
@@ -89,20 +83,13 @@ import type { NavItem } from './components/navigation/types';
 // ==========================================
 const CustomerLayout: React.FC = () => {
   const [showSidebar, setShowSidebar] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const navItems: NavItem[] = [
-    { label: 'Home', href: '/', icon: <Home size={15} /> },
     { label: 'Find Services', href: '/services', icon: <Search size={15} /> },
     { label: 'Request Service', href: '/request', icon: <Sparkles size={15} /> },
     { label: 'Activity', href: '/activity', icon: <CalendarClock size={15} /> },
-    ...(isAuthenticated ? [{ label: 'Profile', href: '/profile', icon: <User size={15} /> }] : []),
     { label: 'Messages', href: '/messages', icon: <MessageSquare size={15} /> },
-    { label: 'Alerts', href: '/notifications', icon: <Bell size={15} /> },
-    { label: 'Partner Portal', href: '/provider', icon: <Briefcase size={15} /> },
-    { label: 'Operations Console', href: '/admin', icon: <ShieldCheck size={15} /> },
-    { label: 'Health & DB', href: '/health', icon: <Activity size={15} /> },
-    { label: 'Design System', href: '/design-system', icon: <Layers size={15} /> },
   ];
 
   const sidebarItems: NavItem[] = [
@@ -127,110 +114,16 @@ const CustomerLayout: React.FC = () => {
       showSidebar={showSidebar}
       sidebarTitle="Customer Navigation"
       headerActionArea={
-        <div className="flex items-center gap-2">
-          {/* Quick Messages Icon Link */}
-          <Link
-            to="/messages"
-            title="Messages"
-            aria-label="Direct Messages"
-            className="p-1.5 rounded-lg text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-          >
-            <MessageSquare size={18} />
-          </Link>
-
-          {/* Quick Notifications Icon Link */}
-          <Link
-            to="/notifications"
-            title="Notifications"
-            aria-label="Service Notifications"
-            className="p-1.5 rounded-lg text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-          >
-            <NotificationBadge size={18} />
-          </Link>
-
-          <Link to="/provider">
-            <Button
-              variant="outline"
-              size="sm"
-              leftIcon={<Briefcase size={13} />}
-              className="hidden sm:inline-flex text-xs h-8"
-            >
-              Partner
-            </Button>
-          </Link>
-
-          <Link to="/admin">
-            <Button
-              variant="outline"
-              size="sm"
-              leftIcon={<ShieldCheck size={13} />}
-              className="hidden md:inline-flex text-xs h-8"
-            >
-              Admin
-            </Button>
-          </Link>
-
-          <Link to="/request">
-            <Button variant="primary" size="sm" leftIcon={<PlusCircle size={14} />} className="text-xs h-8">
-              Request Service
-            </Button>
-          </Link>
-
-          {/* Authentication State Section */}
-          {isAuthenticated && user ? (
-            <div className="flex items-center gap-2 pl-1 border-l border-neutral-200">
-              <Link
-                to="/profile"
-                className="hidden xl:flex items-center gap-1.5 px-2 py-1 bg-neutral-100 hover:bg-neutral-200 rounded-md text-xs font-medium text-neutral-700 transition-colors"
-                title="View My Profile & Saved Addresses"
-              >
-                <User size={12} className="text-neutral-500" />
-                <span className="max-w-[110px] truncate" title={user.email}>{user.email}</span>
-                <Badge variant={user.role === 'ADMIN' ? 'neutral' : user.role === 'PROVIDER' ? 'info' : 'success'} size="sm" className="text-[9px] py-0 px-1 font-bold">
-                  {user.role}
-                </Badge>
-              </Link>
-              <Link to="/profile" className="xl:hidden">
-                <Button variant="ghost" size="sm" leftIcon={<User size={13} />} className="text-xs h-8">
-                  Profile
-                </Button>
-              </Link>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={logout}
-                leftIcon={<LogOut size={13} />}
-                className="text-xs h-8 text-neutral-600 hover:text-red-700"
-              >
-                Sign Out
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1.5 pl-1 border-l border-neutral-200">
-              <Link to="/login">
-                <Button variant="ghost" size="sm" leftIcon={<LogIn size={13} />} className="text-xs h-8">
-                  Sign In
-                </Button>
-              </Link>
-              <Link to="/register">
-                <Button variant="outline" size="sm" leftIcon={<UserPlus size={13} />} className="text-xs h-8 hidden sm:inline-flex">
-                  Register
-                </Button>
-              </Link>
-            </div>
-          )}
-
-          <Button
-            variant={showSidebar ? 'secondary' : 'ghost'}
-            size="sm"
-            leftIcon={<PanelLeft size={14} />}
-            onClick={() => setShowSidebar((prev) => !prev)}
-            aria-label="Toggle sidebar navigation"
-            className="hidden lg:inline-flex text-xs h-8"
-          >
-            {showSidebar ? 'Hide Menu' : 'Sidebar'}
-          </Button>
-        </div>
+        <Button
+          variant={showSidebar ? 'secondary' : 'ghost'}
+          size="sm"
+          leftIcon={<PanelLeft size={14} />}
+          onClick={() => setShowSidebar((prev) => !prev)}
+          aria-label="Toggle sidebar navigation"
+          className="hidden xl:inline-flex text-xs h-9"
+        >
+          {showSidebar ? 'Hide Menu' : 'Menu'}
+        </Button>
       }
     >
       <Outlet />
